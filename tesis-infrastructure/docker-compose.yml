@@ -53,29 +53,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
-  master:
-    image: justb4/jmeter:latest
-    ports:
-      - "60000:60000"
-    volumes:
-      - ./jmeter:/jmeter
-    environment:
-      - REMOTE_HOSTS=slave1,slave2
-    command: -n -t /jmeter/test.jmx -R\${REMOTE_HOSTS} -l /jmeter/testresults.jtl -e -o /jmeter/report
-  slave1:
-    image: justb4/jmeter:latest
-    volumes:
-      - ./jmeter:/jmeter
-    command: -Djava.rmi.server.hostname=slave1 -Dclient.rmi.localport=50000 -Dserver_port=1099 -Dserver.rmi.localport=50000 -Dserver.rmi.ssl.disable=true -Djava.rmi.server.logCalls=true -Dserver.log.level=DEBUG -Dclient.log.level=DEBUG -Dlog4j.configurationFile=/jmeter/log4j2.xml -Dlog4j2.debug=true -Dlog4j2.configurationFile=/jmeter/log4j2.xml -Dlog_level.jmeter=WARN -Jserver.rmi.ssl.disable=true -s -Jserver.rmi.localport=50000 -Jserver_port=1099
-    depends_on:
-      - master
-  slave2:
-    image: justb4/jmeter:latest
-    volumes:
-      - ./jmeter:/jmeter
-    command: -Djava.rmi.server.hostname=slave2 -Dclient.rmi.localport=50001 -Dserver_port=1099 -Dserver.rmi.localport=50001 -Dserver.rmi.ssl.disable=true -Djava.rmi.server.logCalls=true -Dserver.log.level=DEBUG -Dclient.log.level=DEBUG -Dlog4j.configurationFile=/jmeter/log4j2.xml -Dlog4j2.debug=true -Dlog4j2.configurationFile=/jmeter/log4j2.xml -Dlog_level.jmeter=WARN -Jserver.rmi.ssl.disable=true -s -Jserver.rmi.localport=50001 -Jserver_port=1099
-    depends_on:
-      - master
+  
 volumes:
   rethinkdb-1-data:
   rethinkdb-2-data:
