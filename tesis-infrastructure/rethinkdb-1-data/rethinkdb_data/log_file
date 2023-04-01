@@ -1,0 +1,14 @@
+2023-03-31T14:06:04.511701549 0.009357s notice: Recursively removing directory /data/rethinkdb_data/tmp
+2023-03-31T14:06:04.518609049 0.016255s notice: Initializing directory /data/rethinkdb_data
+2023-03-31T14:06:04.519064799 0.016711s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/data/rethinkdb_data' did not already exist or is empty.)
+2023-03-31T14:06:04.519564591 0.017211s notice: Running rethinkdb 2.4.2~0bullseye (GCC 10.2.1)...
+2023-03-31T14:06:04.522017299 0.019664s notice: Running on Linux 5.15.49-linuxkit aarch64
+2023-03-31T14:06:04.522505341 0.020151s notice: Loading data from directory /data/rethinkdb_data
+2023-03-31T14:06:04.546630883 0.044277s info: Automatically using cache size of 972 MB
+2023-03-31T14:06:04.547354674 0.045001s notice: Listening for intracluster connections on port 29015
+2023-03-31T14:06:04.548450299 0.046096s notice: Listening for client driver connections on port 28015
+2023-03-31T14:06:04.548501383 0.046147s notice: Listening for administrative HTTP connections on port 8080
+2023-03-31T14:06:04.548513508 0.046159s notice: Listening on cluster addresses: 127.0.0.1, 192.168.80.6
+2023-03-31T14:06:04.548516674 0.046163s notice: Listening on driver addresses: 127.0.0.1, 192.168.80.6
+2023-03-31T14:06:04.548519674 0.046166s notice: Listening on http addresses: 127.0.0.1, 192.168.80.6
+2023-03-31T14:06:04.548522591 0.046168s notice: Server ready, "9db0189b04f4_zhu" 3ab25a3f-b542-42dd-b7ef-110cbcc13a51

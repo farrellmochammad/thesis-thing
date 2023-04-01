@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3000:3000
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  postgres:
+    image: postgres:12
+    restart: always
+    ports:
+      - "54320:5432"
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: shop
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: farrellmochammad@zebu.com
+      PGADMIN_DEFAULT_PASSWORD: HelloWorld123!
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    restart: always
+    ports:
+      - 9187:9187
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:pgpassword@postgres:5432/shop?sslmode=disable"
+    links:
+      - postgres
+      - prometheus
+volumes:
+  local_pgdata:
+  pgadmin_data:

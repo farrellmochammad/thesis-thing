@@ -1,0 +1,85 @@
+version: "3.9"
+services:
+  rethinkdb-1:
+    image: rethinkdb:2.4
+    volumes:
+      - rethinkdb-1-data:/data
+    ports:
+      - "8080:8080"
+      - "28015:28015"
+      - "29015:29015"
+    environment:
+      - DB_NAME=ci-connector-transaction
+    networks:
+      - rethinkdb-net
+  rethinkdb-2:
+    image: rethinkdb:2.4
+    volumes:
+      - rethinkdb-2-data:/data
+    ports:
+      - "8081:8080"
+      - "28017:28015"
+      - "29017:29015"
+    environment:
+      - DB_NAME=ci-connector-transaction
+    networks:
+      - rethinkdb-net
+  # rethinkdb:
+  #   image: rethinkdb:2.4
+  #   ports:
+  #     - 8080:8080
+  #   volumes:
+  #     - ~/apps/rethinkdb/data:/app
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+  db:
+    container_name: pg_container
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: bifast_db
+    ports:
+      - "5432:5432"
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: raj@nola.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+  master:
+    image: justb4/jmeter:latest
+    ports:
+      - "60000:60000"
+    volumes:
+      - ./jmeter:/jmeter
+    environment:
+      - REMOTE_HOSTS=slave1,slave2
+    command: -n -t /jmeter/test.jmx -R\${REMOTE_HOSTS} -l /jmeter/testresults.jtl -e -o /jmeter/report
+  slave1:
+    image: justb4/jmeter:latest
+    volumes:
+      - ./jmeter:/jmeter
+    command: -Djava.rmi.server.hostname=slave1 -Dclient.rmi.localport=50000 -Dserver_port=1099 -Dserver.rmi.localport=50000 -Dserver.rmi.ssl.disable=true -Djava.rmi.server.logCalls=true -Dserver.log.level=DEBUG -Dclient.log.level=DEBUG -Dlog4j.configurationFile=/jmeter/log4j2.xml -Dlog4j2.debug=true -Dlog4j2.configurationFile=/jmeter/log4j2.xml -Dlog_level.jmeter=WARN -Jserver.rmi.ssl.disable=true -s -Jserver.rmi.localport=50000 -Jserver_port=1099
+    depends_on:
+      - master
+  slave2:
+    image: justb4/jmeter:latest
+    volumes:
+      - ./jmeter:/jmeter
+    command: -Djava.rmi.server.hostname=slave2 -Dclient.rmi.localport=50001 -Dserver_port=1099 -Dserver.rmi.localport=50001 -Dserver.rmi.ssl.disable=true -Djava.rmi.server.logCalls=true -Dserver.log.level=DEBUG -Dclient.log.level=DEBUG -Dlog4j.configurationFile=/jmeter/log4j2.xml -Dlog4j2.debug=true -Dlog4j2.configurationFile=/jmeter/log4j2.xml -Dlog_level.jmeter=WARN -Jserver.rmi.ssl.disable=true -s -Jserver.rmi.localport=50001 -Jserver_port=1099
+    depends_on:
+      - master
+volumes:
+  rethinkdb-1-data:
+  rethinkdb-2-data:
+
+networks:
+  rethinkdb-net:
+   

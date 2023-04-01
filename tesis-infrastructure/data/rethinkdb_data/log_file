@@ -1,0 +1,31 @@
+2023-03-31T13:53:22.035032835 0.012789s notice: Recursively removing directory /data/rethinkdb_data/tmp
+2023-03-31T13:53:22.039321918 0.017075s notice: Initializing directory /data/rethinkdb_data
+2023-03-31T13:53:22.039743335 0.017497s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/data/rethinkdb_data' did not already exist or is empty.)
+2023-03-31T13:53:22.040048043 0.017801s notice: Running rethinkdb 2.4.2~0bullseye (GCC 10.2.1)...
+2023-03-31T13:53:22.043308043 0.021062s notice: Running on Linux 5.15.49-linuxkit aarch64
+2023-03-31T13:53:22.043753168 0.021507s notice: Loading data from directory /data/rethinkdb_data
+2023-03-31T13:53:22.086456835 0.064210s info: Automatically using cache size of 979 MB
+2023-03-31T13:53:22.087866418 0.065620s notice: Listening for intracluster connections on port 29015
+2023-03-31T13:53:22.091627168 0.069381s notice: Listening for client driver connections on port 28015
+2023-03-31T13:53:22.091690960 0.069444s notice: Listening for administrative HTTP connections on port 8080
+2023-03-31T13:53:22.091694252 0.069448s notice: Listening on cluster addresses: 127.0.0.1, 192.168.80.5
+2023-03-31T13:53:22.091698043 0.069451s notice: Listening on driver addresses: 127.0.0.1, 192.168.80.5
+2023-03-31T13:53:22.091701710 0.069455s notice: Listening on http addresses: 127.0.0.1, 192.168.80.5
+2023-03-31T13:53:22.091704710 0.069458s notice: Server ready, "645bbcc08918_vi0" a945c315-7a8d-4773-9570-b720e989a030
+2023-03-31T13:54:10.645946636 48.623330s info: Table d591d765-9a38-4416-9cff-08b97670f899: Starting a new Raft election for term 1.
+2023-03-31T13:54:10.648348261 48.625732s info: Table d591d765-9a38-4416-9cff-08b97670f899: Added replica on this server.
+2023-03-31T13:54:10.650343427 48.627727s info: Table d591d765-9a38-4416-9cff-08b97670f899: This server is Raft leader for term 1. Latest log index is 0.
+2023-03-31T13:54:10.911416302 48.888800s info: Table d591d765-9a38-4416-9cff-08b97670f899: Configuration is changing.
+2023-03-31T14:01:47.637894333 0.012578s notice: Running rethinkdb 2.4.2~0bullseye (GCC 10.2.1)...
+2023-03-31T14:01:47.642273333 0.016958s notice: Running on Linux 5.15.49-linuxkit aarch64
+2023-03-31T14:01:47.644288833 0.018973s notice: Loading data from directory /data/rethinkdb_data
+2023-03-31T14:01:47.670083000 0.044767s info: Automatically using cache size of 976 MB
+2023-03-31T14:01:47.671912791 0.046596s notice: Listening for intracluster connections on port 29015
+2023-03-31T14:01:47.696177625 0.070861s notice: Listening for client driver connections on port 28015
+2023-03-31T14:01:47.696260208 0.070944s notice: Listening for administrative HTTP connections on port 8080
+2023-03-31T14:01:47.696264083 0.070948s notice: Listening on cluster addresses: 127.0.0.1, 192.168.80.6
+2023-03-31T14:01:47.696268458 0.070952s notice: Listening on driver addresses: 127.0.0.1, 192.168.80.6
+2023-03-31T14:01:47.696272375 0.070956s notice: Listening on http addresses: 127.0.0.1, 192.168.80.6
+2023-03-31T14:01:47.696276375 0.070960s notice: Server ready, "645bbcc08918_vi0" a945c315-7a8d-4773-9570-b720e989a030
+2023-03-31T14:01:48.880418833 1.255103s info: Table d591d765-9a38-4416-9cff-08b97670f899: Starting a new Raft election for term 2.
+2023-03-31T14:01:48.884900417 1.259585s info: Table d591d765-9a38-4416-9cff-08b97670f899: This server is Raft leader for term 2. Latest log index is 4.
