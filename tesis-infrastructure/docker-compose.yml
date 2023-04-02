@@ -53,11 +53,35 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
-  
+  pubsub-1:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+  pubsub-2:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6380:6380'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+  pubsub-3:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6381:6381'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
 volumes:
   rethinkdb-1-data:
   rethinkdb-2-data:
-
+  cache:
+    driver: local
 networks:
   rethinkdb-net:
    

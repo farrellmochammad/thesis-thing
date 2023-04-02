@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"bi-fast-esb/logic"
@@ -54,7 +53,6 @@ func ProcessTransaction(c *gin.Context) {
 	}
 
 	if isValidateAmount {
-		fmt.Println("Bank : ", bank)
 		middleware.JkdPost(bank.BankURL+"/validatetransaction", input)
 	}
 
