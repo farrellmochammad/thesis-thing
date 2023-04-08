@@ -1,0 +1,37 @@
+package middleware
+
+import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+)
+
+func JkdPost(url string, payload interface{}) {
+
+	client := &http.Client{}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		// handle error
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		// handle error
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		// handle error
+	}
+	defer resp.Body.Close()
+
+	_, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		// handle error
+	}
+
+}

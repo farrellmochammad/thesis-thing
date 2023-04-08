@@ -33,8 +33,6 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println("Message : ", msg)
-
 		var transaction models.Transaction
 		err = json.Unmarshal([]byte(msg.Payload), &transaction)
 		if err != nil {

@@ -92,7 +92,6 @@ func main() {
 				panic(err)
 			}
 			fmt.Println("Published message to channel: ", result)
-
 			// middleware.JkdPost(bankReceiver.BankURL+"/failedtransaction", input)
 			// middleware.JkdPost(bankSender.BankURL+"/failedtransaction", input)
 		}
