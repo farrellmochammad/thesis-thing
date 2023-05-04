@@ -7,15 +7,12 @@ import (
 	"errors"
 	"net/http"
 	"os"
-	"time"
 
 	"ci-connector-esb/middleware"
 	"ci-connector-esb/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-
-	r "gopkg.in/gorethink/gorethink.v4"
 )
 
 func CreateTransaction(c *gin.Context) {
@@ -87,8 +84,7 @@ func FindTransaction(c *gin.Context) {
 }
 
 func SuccessTransaction(c *gin.Context) {
-
-	session := c.MustGet("rdb").(*r.Session)
+	analytic_url := c.MustGet("analytic_url").(string)
 
 	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -96,19 +92,14 @@ func SuccessTransaction(c *gin.Context) {
 		return
 	}
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
-		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-		"Status":    "Success",
-	}).RunWrite(session)
-	if err != nil {
-		panic(err.Error())
-	}
+	middleware.JkdPost(analytic_url+"/success-transaction-analytic", input)
 
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
 func FailedTransaction(c *gin.Context) {
-	session := c.MustGet("rdb").(*r.Session)
+
+	analytic_url := c.MustGet("analytic_url").(string)
 
 	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -116,19 +107,14 @@ func FailedTransaction(c *gin.Context) {
 		return
 	}
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
-		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-		"Status":    "Failed",
-	}).RunWrite(session)
-	if err != nil {
-		panic(err.Error())
-	}
+	middleware.JkdPost(analytic_url+"/failed-transaction-analytic", input)
 
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
 func RetrieveTransaction(c *gin.Context) {
-	session := c.MustGet("rdb").(*r.Session)
+
+	analytic_url := c.MustGet("analytic_url").(string)
 
 	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -136,16 +122,7 @@ func RetrieveTransaction(c *gin.Context) {
 		return
 	}
 
-	retrieve_transaction := models.RetrieveTransaction{
-		ID:          input.TransactionHash,
-		Transaction: input,
-		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-	}
-
-	_, err := r.DB("ci-connector-transaction").Table("retrieve_transactions").Insert(retrieve_transaction).RunWrite(session)
-	if err != nil {
-		panic(err.Error())
-	}
+	middleware.JkdPost(analytic_url+"/retrieve-transaction-analytic", input)
 
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }

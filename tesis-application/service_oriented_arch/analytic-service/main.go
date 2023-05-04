@@ -43,6 +43,9 @@ func main() {
 
 	r.POST("/input-transaction-analytic", controllers.InputTransactionAnalytic)
 	r.POST("/input-transaction-incoming-analytic", controllers.InputTransactionIncomingAnalytic)
+	r.POST("/success-transaction-analytic", controllers.SuccessTransactionAnalytic)
+	r.POST("/failed-transaction-analytic", controllers.FailedTransactionAnalytic)
+	r.POST("/retrieve-transaction-analytic", controllers.RetrieveTransactionAnalytic)
 
 	r.Run(*port)
 }

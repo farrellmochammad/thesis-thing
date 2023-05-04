@@ -93,3 +93,66 @@ func InputTransactionIncomingAnalytic(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": input.Transaction})
 }
+
+func SuccessTransactionAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.Transaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
+		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+		"Status":    "Success",
+	}).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
+
+func FailedTransactionAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.Transaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
+		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+		"Status":    "Failed",
+	}).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
+
+func RetrieveTransactionAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.Transaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	retrieve_transaction := models.RetrieveTransaction{
+		ID:          input.TransactionHash,
+		Transaction: input,
+		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("retrieve_transactions").Insert(retrieve_transaction).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
