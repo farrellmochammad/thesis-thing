@@ -14,6 +14,7 @@ import (
 
 func main() {
 	port := flag.String("port", ":8083", "the port to listen on")
+	analytic_url := flag.String("analyticurl", "localhost:8088", "the port to listen for analytic service")
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
 	flag.Parse()
 
@@ -45,6 +46,7 @@ func main() {
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 		c.Set("rdb", session)
+		c.Set("analytic_url", *analytic_url)
 		c.Next()
 	})
 

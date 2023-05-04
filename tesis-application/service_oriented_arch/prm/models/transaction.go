@@ -32,3 +32,9 @@ type FraudTransaction struct {
 	IndexFraud    float64 `json:"indexfraud"`
 	FraudCategory bool    `json:"fraudcategory"`
 }
+
+type ProcessTransaction struct {
+	Transaction      Transaction      `json:"transaction"`
+	FraudTransaction FraudTransaction `json:"fraud_transaction"`
+	BankSender       string           `json:"bank_sender"`
+}

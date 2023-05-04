@@ -1,7 +1,7 @@
 package models
 
 type Transaction struct {
-	Hash                string  `json:"transaction_hash"`
+	TransactionHash     string  `json:"transaction_hash"`
 	SenderName          string  `json:"sender_name"`
 	SenderAccountNumber string  `json:"sender_account_number"`
 	SenderCity          string  `json:"sender_city"`

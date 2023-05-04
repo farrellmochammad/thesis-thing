@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -20,6 +21,12 @@ func main() {
 	redis_connstring := flag.String("redis", "localhost:6379", "the port to listen on")
 	channels := flag.String("channels", "bi-fast-outgoing-transaction,bi-fast-success-transaction,bi-fast-failed-transaction", "comma-separated list of channels to subscribe to")
 	ctx := context.Background()
+
+	db, err := models.SetupModels()
+	if err != nil {
+		panic("Failed to connect to database!")
+	}
+	models.DB = db
 
 	flag.Parse()
 
@@ -51,13 +58,27 @@ func main() {
 				return
 			case msg := <-ch:
 				if msg.Channel == "bi-fast-outgoing-transaction" {
-					var transaction models.FraudTransaction
-					err := json.Unmarshal([]byte(msg.Payload), &transaction)
+					var fraudtransaction models.FraudTransaction
+					err := json.Unmarshal([]byte(msg.Payload), &fraudtransaction)
 					if err != nil {
 						// handle error
 					}
 
-					go middleware.JkdPost("http://localhost:8083/validatetransaction", transaction)
+					var transaction models.Transaction
+					result := db.Where("transaction_hash = ?", fraudtransaction.TransactionID).First(&transaction)
+					if result.Error != nil {
+						fmt.Println("Transaction hash not exist")
+						return
+					}
+
+					var bank models.Bank
+					result = db.Where("bank_code = ?", transaction.ReceiverBankCode).First(&bank)
+					if result.Error != nil {
+						fmt.Println("Transaction hash not exist")
+						return
+					}
+
+					go middleware.JkdPost(bank.BankURL+"/validatetransaction", fraudtransaction)
 					continue
 				} else if msg.Channel == "bi-fast-success-transaction" {
 					var transaction models.ResultTransaction

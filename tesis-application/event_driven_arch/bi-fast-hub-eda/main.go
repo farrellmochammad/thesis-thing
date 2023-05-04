@@ -38,8 +38,6 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println("Message bi fast hub eda : ", msg)
-
 		var transaction models.Transaction
 		err = json.Unmarshal([]byte(msg.Payload), &transaction)
 		if err != nil {

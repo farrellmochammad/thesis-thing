@@ -22,6 +22,7 @@ func main() {
 	})
 
 	r.PUT("/updatetransaction", controllers.UpdateTransaction)
+	r.POST("bi-fast-hub/validate-transaction", controllers.BiHubValidateTransaction)
 
 	r.Run(":8087")
 }

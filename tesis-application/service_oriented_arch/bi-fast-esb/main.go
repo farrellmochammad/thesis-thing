@@ -23,10 +23,15 @@ func main() {
 
 	r.POST("/processtransaction", controllers.ProcessTransaction)
 	r.POST("/bi-fast-validatetransaction", controllers.ValidateTransaction)
-	r.POST("/prm-processtransaction", controllers.PrmProcessTransaction)
+	// r.POST("/prm-processtransaction", controllers.PrmProcessTransaction)
 	r.PUT("/updatetransaction", controllers.UpdateTransaction)
 	r.POST("/bihub-successtransaction", controllers.BiHubSuccessTransaction)
 	r.POST("/bihub-failedtransaction", controllers.BiHubFailedTransaction)
+
+	//New Code After
+	r.POST("/bi-fast-esb/prm-processtransaction", controllers.PrmProcessTransaction)
+	r.POST("/bi-fast-esb/failed-processtransaction", controllers.FailedProcessTransaction)
+	r.POST("/bi-fast-esb/report-prm-processtransaction", controllers.ReportPrmProcessTransaction)
 
 	r.Run(":8084")
 }

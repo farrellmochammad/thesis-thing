@@ -57,7 +57,7 @@ func main() {
 	r.POST("/outcometransaction", controllers.CheckOutcomeTransaction)
 	r.POST("/incometransaction", controllers.CheckIncomeTransaction)
 	r.GET("/transactions", controllers.FindTransaction)
-	// r.POST("/validatetransaction", controllers.ValidateTransaction)
+	r.POST("/validatetransaction", controllers.ValidateTransaction)
 	r.POST("/statustransaction", controllers.StatusTransaction)
 
 	r.POST("/successtransaction", controllers.SuccessTransaction)

@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Transaction struct {
 	gorm.Model
@@ -31,4 +35,21 @@ type FraudTransaction struct {
 	TransactionID string  `json:"transactionid"`
 	IndexFraud    float64 `json:"indexfraud"`
 	FraudCategory bool    `json:"fraudcategory"`
+}
+
+type QueryInformationTransaction struct {
+	ID          string      `gorethink:"id,omitempty"`
+	Transaction Transaction `json:"transaction"`
+	CreatedAt   string      `json:"created_at"`
+	UpdatedAt   string      `json:"updated_at"`
+	DeletedAt   time.Time   `json:"deleted_at"`
+}
+
+type SendInformationTransaction struct {
+	ID          string      `gorethink:"id,omitempty"`
+	Transaction Transaction `json:"transaction"`
+	Status      string      `json:"status"`
+	CreatedAt   string      `json:"created_at"`
+	UpdatedAt   string      `json:"updated_at"`
+	DeletedAt   time.Time   `json:"deleted_at"`
 }

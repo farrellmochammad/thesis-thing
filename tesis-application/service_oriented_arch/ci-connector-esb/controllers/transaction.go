@@ -20,7 +20,7 @@ import (
 
 func CreateTransaction(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
-	session := c.MustGet("rdb").(*r.Session)
+	analytic_url := c.MustGet("analytic_url").(string)
 
 	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -67,18 +67,8 @@ func CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	query_information_transaction := models.QueryInformationTransaction{
-		ID:          transaction.TransactionHash,
-		Transaction: transaction,
-		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-	}
-
-	_, err = r.DB("ci-connector-transaction").Table("query_information_transaction").Insert(query_information_transaction).RunWrite(session)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	middleware.JkdPost(os.Getenv("BI_FAST_HUB_URL")+"/processtransaction", transaction)
+	middleware.JkdPost(analytic_url+"/input-transaction-analytic", transaction)
+	middleware.JkdPost(os.Getenv("BI_FAST_ESB_URL")+"/processtransaction", transaction)
 
 	c.JSON(http.StatusOK, gin.H{"data": transaction})
 }
@@ -163,7 +153,7 @@ func RetrieveTransaction(c *gin.Context) {
 func ValidateTransaction(c *gin.Context) {
 	session := c.MustGet("rdb").(*r.Session)
 
-	var input models.ResultTransaction
+	var input models.ProcessTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

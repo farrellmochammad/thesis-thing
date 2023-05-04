@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"net/http"
 
 	"bi-fast-esb/logic"
@@ -26,36 +25,34 @@ func FindTransaction(c *gin.Context) {
 }
 
 func PrmProcessTransaction(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
-	var input models.FraudTransaction
+	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var transaction models.Transaction
-	result := db.Where("transaction_hash = ?", input.TransactionID).First(&transaction)
+	middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+}
 
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			// handle record not found error
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Transaction not found"})
-		} else {
-			// handle other errors
-			c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
-		}
+func ReportPrmProcessTransaction(c *gin.Context) {
+	var input models.ProcessTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	bankSender, _, _ := logic.ValidateBankSender(db, transaction)
+	middleware.JkdPost(input.BankSender+"/validatetransaction", input)
+}
 
-	resultTransaction := models.ResultTransaction{
-		FraudTransaction: input,
-		Transaction:      transaction,
+func FailedProcessTransaction(c *gin.Context) {
+	var input models.Transaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	middleware.JkdPost(bankSender.BankURL+"/validatetransaction", resultTransaction)
+	c.JSON(http.StatusBadRequest, gin.H{"Status": "Tidak bisa memproses data transaksi"})
+	return
 }
 
 func ProcessTransaction(c *gin.Context) {
@@ -66,7 +63,9 @@ func ProcessTransaction(c *gin.Context) {
 		return
 	}
 
-	middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+	middleware.JkdPost("http://localhost:8087/bi-fast-hub/validate-transaction", input)
+
+	// middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
 
 }
 
@@ -122,33 +121,6 @@ func UpdateTransaction(c *gin.Context) {
 	}
 
 	middleware.JkdPut("http://localhost:8087/updatetransaction", input)
-
-	// var input models.Transaction
-	// if err := c.ShouldBindJSON(&input); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// isSucess := logic.UpdateBalance(db, input)
-
-	// if isSucess {
-	// 	c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
-	// 	bankReceiver, _, _ := logic.ValidateBankReceiver(db, input)
-	// 	bankSender, _, _ := logic.ValidateBankSender(db, input)
-
-	// 	middleware.JkdPost(bankReceiver.BankURL+"/successtransaction", input)
-	// 	middleware.JkdPost(bankSender.BankURL+"/successtransaction", input)
-	// 	return
-	// } else {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"Status": "Not permitted"})
-	// 	bankReceiver, _, _ := logic.ValidateBankReceiver(db, input)
-	// 	bankSender, _, _ := logic.ValidateBankReceiver(db, input)
-
-	// 	middleware.JkdPost(bankReceiver.BankURL+"/failedtransaction", input)
-	// 	middleware.JkdPost(bankSender.BankURL+"/failedtransaction", input)
-	// 	return
-	// }
-
 }
 
 func BiHubSuccessTransaction(c *gin.Context) {

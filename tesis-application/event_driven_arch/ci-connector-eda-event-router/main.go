@@ -58,8 +58,8 @@ func main() {
 						// handle error
 					}
 
-					fmt.Println("Si transaction : ", transaction)
-					middleware.JkdPost("http://localhost:8084/processtransaction", transaction)
+					fmt.Println("Got message channel from get-information, send to /processtransaction")
+					middleware.JkdPost("http://localhost:8014/processtransaction", transaction)
 					break
 				} else if msg.Channel == "ci-connector-update-transaction" {
 					var transaction models.Transaction
@@ -68,7 +68,8 @@ func main() {
 						// handle error
 					}
 
-					middleware.JkdPut("http://localhost:8084/updatetransaction", transaction)
+					fmt.Println("Got message channel from ci-connector-update-transaction, send to /updatetransaction")
+					middleware.JkdPut("http://localhost:8014/updatetransaction", transaction)
 					break
 				}
 			}

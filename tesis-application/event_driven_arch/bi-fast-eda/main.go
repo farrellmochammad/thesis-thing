@@ -35,6 +35,6 @@ func main() {
 	r.POST("/processtransaction", controllers.ProcessTransaction)
 	r.PUT("/updatetransaction", controllers.UpdateTransaction)
 
-	r.Run(":8084")
+	r.Run(":8014")
 
 }
