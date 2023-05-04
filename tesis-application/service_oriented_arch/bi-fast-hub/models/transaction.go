@@ -37,3 +37,9 @@ type ResultTransaction struct {
 	FraudTransaction FraudTransaction `json:"fraud_transaction"`
 	Transaction      Transaction      `json:"transaction"`
 }
+
+type SentTransaction struct {
+	Transaction  Transaction `json:"transaction"`
+	BankSender   string      `json:"bank_sender"`
+	BankReceiver string      `json:"bank_receiver"`
+}

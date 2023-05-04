@@ -67,3 +67,9 @@ type RetrieveTransaction struct {
 	UpdatedAt   string      `json:"updated_at"`
 	DeletedAt   time.Time   `json:"deleted_at"`
 }
+
+type ProcessTransaction struct {
+	Transaction      Transaction      `json:"transaction"`
+	FraudTransaction FraudTransaction `json:"fraud_transaction"`
+	BankSender       string           `json:"bank_sender"`
+}

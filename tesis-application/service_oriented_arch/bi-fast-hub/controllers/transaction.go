@@ -21,16 +21,24 @@ func UpdateTransaction(c *gin.Context) {
 	}
 
 	isSucess := logic.UpdateBalance(db, input)
+	bankReceiver, _, _ := logic.ValidateBankReceiver(db, input)
+	bankSender, _, _ := logic.ValidateBankSender(db, input)
+
+	sentTransaction := models.SentTransaction{
+		Transaction:  input,
+		BankSender:   bankSender.BankURL,
+		BankReceiver: bankReceiver.BankURL,
+	}
 
 	if isSucess {
 		c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
 
-		middleware.JkdPost("http://localhost:8084/bihub-successtransaction", input)
+		middleware.JkdPost("http://localhost:8084/bihub-successtransaction", sentTransaction)
 		return
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"Status": "Not permitted"})
 
-		middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", input)
+		middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", sentTransaction)
 		return
 	}
 

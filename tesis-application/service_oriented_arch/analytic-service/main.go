@@ -42,6 +42,7 @@ func main() {
 	})
 
 	r.POST("/input-transaction-analytic", controllers.InputTransactionAnalytic)
+	r.POST("/input-transaction-incoming-analytic", controllers.InputTransactionIncomingAnalytic)
 
 	r.Run(*port)
 }

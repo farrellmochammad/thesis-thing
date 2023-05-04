@@ -151,7 +151,7 @@ func RetrieveTransaction(c *gin.Context) {
 }
 
 func ValidateTransaction(c *gin.Context) {
-	session := c.MustGet("rdb").(*r.Session)
+	analytic_url := c.MustGet("analytic_url").(string)
 
 	var input models.ProcessTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -159,18 +159,9 @@ func ValidateTransaction(c *gin.Context) {
 		return
 	}
 
-	send_information_transaction := models.SendInformationTransaction{
-		ID:          input.Transaction.TransactionHash,
-		Transaction: input.Transaction,
-		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-	}
+	middleware.JkdPost(analytic_url+"/input-transaction-incoming-analytic", input.Transaction)
+	middleware.JkdPut(os.Getenv("BI_FAST_ESB_URL")+"/updatetransaction", input.Transaction)
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Insert(send_information_transaction).RunWrite(session)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	middleware.JkdPut(os.Getenv("BI_FAST_HUB_URL")+"/updatetransaction", input.Transaction)
 }
 
 func StatusTransaction(c *gin.Context) {

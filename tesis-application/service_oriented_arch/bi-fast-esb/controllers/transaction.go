@@ -124,34 +124,26 @@ func UpdateTransaction(c *gin.Context) {
 }
 
 func BiHubSuccessTransaction(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
-	var input models.Transaction
+	var input models.SentTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	bankReceiver, _, _ := logic.ValidateBankReceiver(db, input)
-	bankSender, _, _ := logic.ValidateBankSender(db, input)
-
-	middleware.JkdPost(bankReceiver.BankURL+"/retrievetransaction", input)
-	middleware.JkdPost(bankSender.BankURL+"/successtransaction", input)
+	middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankSender+"/successtransaction", input.Transaction)
 
 }
 
 func BiHubFailedTransaction(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
 
-	var input models.Transaction
+	var input models.SentTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	bankReceiver, _, _ := logic.ValidateBankReceiver(db, input)
-	bankSender, _, _ := logic.ValidateBankSender(db, input)
+	middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankSender+"/failedtransaction", input.Transaction)
 
-	middleware.JkdPost(bankReceiver.BankURL+"/retrievetransaction", input)
-	middleware.JkdPost(bankSender.BankURL+"/failedtransaction", input)
 }
