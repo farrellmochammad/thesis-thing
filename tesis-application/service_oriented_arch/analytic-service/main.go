@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+
 	port := flag.String("port", ":8088", "the port to listen on")
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
 	flag.Parse()
@@ -43,9 +44,12 @@ func main() {
 
 	r.POST("/input-transaction-analytic", controllers.InputTransactionAnalytic)
 	r.POST("/input-transaction-incoming-analytic", controllers.InputTransactionIncomingAnalytic)
+	r.POST("/input-bulk-transaction-incoming-analytic", controllers.InputBulkTransactionIncomingAnalytic)
 	r.POST("/success-transaction-analytic", controllers.SuccessTransactionAnalytic)
 	r.POST("/failed-transaction-analytic", controllers.FailedTransactionAnalytic)
 	r.POST("/retrieve-transaction-analytic", controllers.RetrieveTransactionAnalytic)
+
+	r.POST("/input-bulk-transaction-analytic", controllers.BulkInputTransactionAnalytic)
 
 	r.Run(*port)
 }

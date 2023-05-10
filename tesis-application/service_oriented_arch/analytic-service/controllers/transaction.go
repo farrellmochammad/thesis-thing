@@ -71,6 +71,64 @@ func InputTransactionAnalytic(c *gin.Context) {
 
 }
 
+func BulkInputTransactionAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	randBytes := make([]byte, 32)
+	_, err := rand.Read(randBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	// Generate a hash of the random byte slice
+	hash := sha256.Sum256(randBytes)
+
+	input.BulkTransactionId = hex.EncodeToString(hash[:])
+
+	query_information_bulk_transaction := models.QueryInformationBulkTransaction{
+		ID:              input.BulkTransactionId,
+		BulkTransaction: input,
+		CreatedAt:       time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}
+
+	_, err = r.DB("ci-connector-transaction").Table("query_information_bulk_transaction").Insert(query_information_bulk_transaction).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+
+}
+
+func InputBulkTransactionIncomingAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	send_information_bulk_transaction := models.SendInformationBulkTransaction{
+		ID:               input.BulkTransactionId,
+		FraudTransaction: input.FraudTransaction,
+		CreatedAt:        time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction").Insert(send_information_bulk_transaction).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
+
 func InputTransactionIncomingAnalytic(c *gin.Context) {
 	session := c.MustGet("rdb").(*r.Session)
 

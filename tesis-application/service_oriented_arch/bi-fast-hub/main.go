@@ -24,5 +24,9 @@ func main() {
 	r.PUT("/updatetransaction", controllers.UpdateTransaction)
 	r.POST("bi-fast-hub/validate-transaction", controllers.BiHubValidateTransaction)
 
+	r.POST("/bi-fast-hub/validate-bulk-transaction", controllers.BiHubValidateBulkTransaction)
+
+	r.PUT("/bi-fast-hub/update-bulk-transaction", controllers.BiHubUpdateBulkTransaction)
+
 	r.Run(":8087")
 }

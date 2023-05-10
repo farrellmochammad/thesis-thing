@@ -27,10 +27,26 @@ type Transaction struct {
 	ReceiverContact     string  `json:"receiver_contact"`
 }
 
+type BulkTransaction struct {
+	gorm.Model
+	BulkTransactionId   string        `json:"bulk_transaction_id"`
+	SenderBankCode      string        `json:"sender_bank_code"`
+	SenderAccountNumber string        `json:"sender_account_number"`
+	Transactions        []Transaction `json:"transactions"`
+}
+
 type FraudTransaction struct {
 	TransactionID string  `json:"transactionid"`
 	IndexFraud    float64 `json:"indexfraud"`
 	FraudCategory bool    `json:"fraudcategory"`
+}
+
+type ReturnBulkTransaction struct {
+	gorm.Model
+	BulkTransactionId string             `json:"bulk_transaction_id"`
+	BankSender        string             `json:"bank_sender"`
+	Transactions      []Transaction      `json:"transactions"`
+	FraudTransaction  []FraudTransaction `json:"fraud_transactions"`
 }
 
 type ResultTransaction struct {

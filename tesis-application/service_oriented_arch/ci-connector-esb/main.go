@@ -57,9 +57,14 @@ func main() {
 	r.POST("/validatetransaction", controllers.ValidateTransaction)
 	r.POST("/statustransaction", controllers.StatusTransaction)
 
+	//For SOA
 	r.POST("/successtransaction", controllers.SuccessTransaction)
 	r.POST("/failedtransaction", controllers.FailedTransaction)
 	r.POST("/retrievetransaction", controllers.RetrieveTransaction)
+
+	//For Bulk Payment
+	r.POST("/bulktransaction", controllers.CreateBulkTransaction)
+	r.POST("/validatebulktransaction", controllers.ValidateBulkTransaction)
 
 	r.Run(*port)
 }

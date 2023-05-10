@@ -31,6 +31,22 @@ type Transaction struct {
 	ReceiverContact     string  `json:"receiver_contact"`
 }
 
+type BulkTransaction struct {
+	gorm.Model
+	BulkTransactionId   string        `json:"bulk_transaction_id"`
+	SenderBankCode      string        `json:"sender_bank_code"`
+	SenderAccountNumber string        `json:"sender_account_number"`
+	Transactions        []Transaction `json:"transactions"`
+}
+
+type ReturnBulkTransaction struct {
+	gorm.Model
+	BulkTransactionId string             `json:"bulk_transaction_id"`
+	BankSender        string             `json:"bank_sender"`
+	Transactions      []Transaction      `json:"transactions"`
+	FraudTransaction  []FraudTransaction `json:"fraud_transactions"`
+}
+
 type FraudTransaction struct {
 	TransactionID string  `json:"transactionid"`
 	IndexFraud    float64 `json:"indexfraud"`
@@ -50,6 +66,14 @@ type QueryInformationTransaction struct {
 	DeletedAt   time.Time   `json:"deleted_at"`
 }
 
+type QueryInformationBulkTransaction struct {
+	ID              string          `gorethink:"id,omitempty"`
+	BulkTransaction BulkTransaction `json:"bulk_transaction"`
+	CreatedAt       string          `json:"created_at"`
+	UpdatedAt       string          `json:"updated_at"`
+	DeletedAt       time.Time       `json:"deleted_at"`
+}
+
 type SendInformationTransaction struct {
 	ID          string      `gorethink:"id,omitempty"`
 	Transaction Transaction `json:"transaction"`
@@ -57,6 +81,15 @@ type SendInformationTransaction struct {
 	CreatedAt   string      `json:"created_at"`
 	UpdatedAt   string      `json:"updated_at"`
 	DeletedAt   time.Time   `json:"deleted_at"`
+}
+
+type SendInformationBulkTransaction struct {
+	ID               string             `gorethink:"id,omitempty"`
+	FraudTransaction []FraudTransaction `json:"fraud_transactions"`
+	Status           string             `json:"status"`
+	CreatedAt        string             `json:"created_at"`
+	UpdatedAt        string             `json:"updated_at"`
+	DeletedAt        time.Time          `json:"deleted_at"`
 }
 
 type RetrieveTransaction struct {

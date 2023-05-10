@@ -22,9 +22,13 @@ func main() {
 	})
 
 	r.POST("/processtransaction", controllers.ProcessTransaction)
+
+	r.POST("/processbulktransaction", controllers.BulkProcessTransaction)
+
 	r.POST("/bi-fast-validatetransaction", controllers.ValidateTransaction)
 	// r.POST("/prm-processtransaction", controllers.PrmProcessTransaction)
 	r.PUT("/updatetransaction", controllers.UpdateTransaction)
+	r.PUT("/updatebulktransaction", controllers.UpdateBulkTransaction)
 	r.POST("/bihub-successtransaction", controllers.BiHubSuccessTransaction)
 	r.POST("/bihub-failedtransaction", controllers.BiHubFailedTransaction)
 
@@ -32,6 +36,11 @@ func main() {
 	r.POST("/bi-fast-esb/prm-processtransaction", controllers.PrmProcessTransaction)
 	r.POST("/bi-fast-esb/failed-processtransaction", controllers.FailedProcessTransaction)
 	r.POST("/bi-fast-esb/report-prm-processtransaction", controllers.ReportPrmProcessTransaction)
+
+	//Code for Bulk transaction
+	r.POST("/bi-fast-esb/prm-processbulktransaction", controllers.PrmProcessBulkTransaction)
+	r.POST("/bi-fast-esb/failed-processbulktransaction", controllers.FailedProcessBulkTransaction)
+	r.POST("/bi-fast-esb/report-prm-processbulktransaction", controllers.ReportPrmProcessBulkTransaction)
 
 	r.Run(":8084")
 }

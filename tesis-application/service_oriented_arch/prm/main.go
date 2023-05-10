@@ -23,5 +23,7 @@ func main() {
 
 	r.POST("/prm-processtransaction", controllers.PrmProcessTransaction)
 
+	r.POST("/prm-processbulktransaction", controllers.PrmProcessBulkTransaction)
+
 	r.Run(":8086")
 }

@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"os"
@@ -68,6 +69,32 @@ func CreateTransaction(c *gin.Context) {
 	middleware.JkdPost(os.Getenv("BI_FAST_ESB_URL")+"/processtransaction", transaction)
 
 	c.JSON(http.StatusOK, gin.H{"data": transaction})
+}
+
+func CreateBulkTransaction(c *gin.Context) {
+	analytic_url := c.MustGet("analytic_url").(string)
+
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	randBytes := make([]byte, 32)
+	_, err := rand.Read(randBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	// Generate a hash of the random byte slice
+	hash := sha256.Sum256(randBytes)
+
+	input.BulkTransactionId = hex.EncodeToString(hash[:])
+
+	middleware.JkdPost(analytic_url+"/input-bulk-transaction-analytic", input)
+	middleware.JkdPost(os.Getenv("BI_FAST_ESB_URL")+"/processbulktransaction", input)
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
 func FindTransaction(c *gin.Context) {
@@ -139,6 +166,30 @@ func ValidateTransaction(c *gin.Context) {
 	middleware.JkdPost(analytic_url+"/input-transaction-incoming-analytic", input.Transaction)
 	middleware.JkdPut(os.Getenv("BI_FAST_ESB_URL")+"/updatetransaction", input.Transaction)
 
+	c.JSON(http.StatusOK, gin.H{"Status": "Success"})
+	return
+}
+
+func ValidateBulkTransaction(c *gin.Context) {
+	analytic_url := c.MustGet("analytic_url").(string)
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Marshal the struct to a JSON-encoded byte slice
+	jsonBytes, err := json.Marshal(input)
+	if err != nil {
+		panic(err)
+	}
+
+	middleware.JkdPost(analytic_url+"/input-bulk-transaction-incoming-analytic", input)
+	middleware.JkdPutFile(os.Getenv("BI_FAST_ESB_URL")+"/updatebulktransaction", jsonBytes)
+
+	c.JSON(http.StatusOK, gin.H{"Status": "Success"})
+	return
 }
 
 func StatusTransaction(c *gin.Context) {

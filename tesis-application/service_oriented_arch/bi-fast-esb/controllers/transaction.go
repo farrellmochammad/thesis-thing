@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"bi-fast-esb/logic"
@@ -69,6 +72,20 @@ func ProcessTransaction(c *gin.Context) {
 
 }
 
+func BulkProcessTransaction(c *gin.Context) {
+
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	middleware.JkdPost("http://localhost:8087/bi-fast-hub/validate-bulk-transaction", input)
+
+	// middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+
+}
+
 func ExecuteTransaction(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
@@ -123,6 +140,27 @@ func UpdateTransaction(c *gin.Context) {
 	middleware.JkdPut("http://localhost:8087/updatetransaction", input)
 }
 
+func UpdateBulkTransaction(c *gin.Context) {
+
+	jsonBytes, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Unmarshal the byte slice into a ReturnBulkTransaction struct
+	var rt models.ReturnBulkTransaction
+	if err := json.Unmarshal(jsonBytes, &rt); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println("RT : ", rt.Transactions)
+	fmt.Println("RT : ", rt.FraudTransaction)
+
+	middleware.JkdPut("http://localhost:8087/bi-fast-hub/update-bulk-transaction", rt)
+}
+
 func BiHubSuccessTransaction(c *gin.Context) {
 	var input models.SentTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -146,4 +184,35 @@ func BiHubFailedTransaction(c *gin.Context) {
 	middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
 	middleware.JkdPost(input.BankSender+"/failedtransaction", input.Transaction)
 
+}
+
+func PrmProcessBulkTransaction(c *gin.Context) {
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	middleware.JkdPost("http://localhost:8086/prm-processbulktransaction", input)
+}
+
+func FailedProcessBulkTransaction(c *gin.Context) {
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{"Status": "Tidak bisa memproses data transaksi"})
+	return
+}
+
+func ReportPrmProcessBulkTransaction(c *gin.Context) {
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	middleware.JkdPost(input.BankSender+"/validatebulktransaction", input)
 }

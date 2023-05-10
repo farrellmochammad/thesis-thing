@@ -64,3 +64,22 @@ func JkdPut(url string, payload interface{}) {
 	}
 
 }
+
+func JkdPutFile(url string, jsonbytes []byte) {
+	// Create a new PUT request with the JSON byte slice as the request body
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewReader(jsonbytes))
+	if err != nil {
+		panic(err)
+	}
+
+	// Set the Content-Type header to "application/json"
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send the request and get the response
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+}

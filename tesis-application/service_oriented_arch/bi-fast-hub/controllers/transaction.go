@@ -81,3 +81,69 @@ func BiHubValidateTransaction(c *gin.Context) {
 	middleware.JkdPost("http://localhost:8084/bi-fast-esb/failed-processtransaction", input)
 
 }
+
+func BiHubValidateBulkTransaction(c *gin.Context) {
+
+	db := c.MustGet("db").(*gorm.DB)
+
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isValidateSenderBank := logic.ValidateBulkBankSender(db, input)
+	if !isValidateSenderBank {
+		c.JSON(http.StatusBadRequest, gin.H{"Message": "Receiver bank doesn't exist"})
+		return
+	}
+
+	isValidateAmount := logic.ValidateBulkAmount(db, input)
+	if !isValidateAmount {
+		c.JSON(http.StatusBadRequest, gin.H{"Message": "Amount not enough"})
+		return
+	}
+
+	if isValidateAmount {
+		middleware.JkdPost("http://localhost:8084/bi-fast-esb/prm-processbulktransaction", input)
+		return
+	}
+
+	middleware.JkdPost("http://localhost:8084/bi-fast-esb/failed-processtransaction", input)
+
+}
+
+func BiHubUpdateBulkTransaction(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	for _, t := range input.Transactions {
+		isSucess := logic.UpdateBalance(db, t)
+		bankReceiver, _, _ := logic.ValidateBankReceiver(db, t)
+		bankSender, _, _ := logic.ValidateBankSender(db, t)
+
+		sentTransaction := models.SentTransaction{
+			Transaction:  t,
+			BankSender:   bankSender.BankURL,
+			BankReceiver: bankReceiver.BankURL,
+		}
+
+		if isSucess {
+			c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
+
+			middleware.JkdPost("http://localhost:8084/bihub-successtransaction", sentTransaction)
+			return
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"Status": "Not permitted"})
+
+			middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", sentTransaction)
+			return
+		}
+	}
+
+}
