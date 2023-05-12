@@ -96,6 +96,25 @@ func InputBulkTransactionAnalytic(c *gin.Context) {
 
 }
 
+func InputBulkTransactionUpdateAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.BulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("query_information_bulk_transaction").Get(input.BulkTransactionId).Update(map[string]interface{}{
+		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
+
 func InputBulkTransactionIncomingAnalytic(c *gin.Context) {
 	session := c.MustGet("rdb").(*r.Session)
 

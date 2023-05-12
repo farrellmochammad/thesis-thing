@@ -44,6 +44,7 @@ func main() {
 
 	r.POST("/input-transaction-analytic", controllers.InputTransactionAnalytic)
 	r.POST("/input-transaction-incoming-analytic", controllers.InputTransactionIncomingAnalytic)
+	r.POST("/input-bulk-transaction-update-analytic", controllers.InputBulkTransactionUpdateAnalytic)
 	r.POST("/input-bulk-transaction-analytic", controllers.InputBulkTransactionAnalytic)
 	r.POST("/input-bulk-transaction-incoming-analytic", controllers.InputBulkTransactionIncomingAnalytic)
 	r.POST("/success-transaction-analytic", controllers.SuccessTransactionAnalytic)

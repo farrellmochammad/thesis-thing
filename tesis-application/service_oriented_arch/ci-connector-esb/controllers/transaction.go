@@ -199,6 +199,8 @@ func ValidateBulkTransaction(c *gin.Context) {
 		panic(err)
 	}
 
+	middleware.JkdPost(analytic_url+"/input-bulk-transaction-update-analytic", input)
+
 	middleware.JkdPost(analytic_url+"/input-bulk-transaction-incoming-analytic", input)
 	middleware.JkdPutFile(os.Getenv("BI_FAST_ESB_URL")+"/updatebulktransaction", jsonBytes)
 
