@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -155,9 +154,6 @@ func UpdateBulkTransaction(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("RT : ", rt.Transactions)
-	fmt.Println("RT : ", rt.FraudTransaction)
-
 	middleware.JkdPut("http://localhost:8087/bi-fast-hub/update-bulk-transaction", rt)
 }
 
@@ -168,7 +164,7 @@ func BiHubSuccessTransaction(c *gin.Context) {
 		return
 	}
 
-	middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	// middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
 	middleware.JkdPost(input.BankSender+"/successtransaction", input.Transaction)
 
 }
@@ -215,4 +211,28 @@ func ReportPrmProcessBulkTransaction(c *gin.Context) {
 	}
 
 	middleware.JkdPost(input.BankSender+"/validatebulktransaction", input)
+}
+
+func SuccessQtBulkTransaction(c *gin.Context) {
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankSender+"/successbulktransaction", input)
+
+}
+
+func FailedQtBulkTransaction(c *gin.Context) {
+	var input models.SentTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankSender+"/failedtransaction", input.Transaction)
+
 }

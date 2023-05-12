@@ -44,12 +44,12 @@ func main() {
 
 	r.POST("/input-transaction-analytic", controllers.InputTransactionAnalytic)
 	r.POST("/input-transaction-incoming-analytic", controllers.InputTransactionIncomingAnalytic)
+	r.POST("/input-bulk-transaction-analytic", controllers.InputBulkTransactionAnalytic)
 	r.POST("/input-bulk-transaction-incoming-analytic", controllers.InputBulkTransactionIncomingAnalytic)
 	r.POST("/success-transaction-analytic", controllers.SuccessTransactionAnalytic)
+	r.POST("/success-bulk-transaction-analytic", controllers.SuccessBulkTransactionAnalytic)
 	r.POST("/failed-transaction-analytic", controllers.FailedTransactionAnalytic)
 	r.POST("/retrieve-transaction-analytic", controllers.RetrieveTransactionAnalytic)
-
-	r.POST("/input-bulk-transaction-analytic", controllers.BulkInputTransactionAnalytic)
 
 	r.Run(*port)
 }

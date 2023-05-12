@@ -41,6 +41,8 @@ func main() {
 	r.POST("/bi-fast-esb/prm-processbulktransaction", controllers.PrmProcessBulkTransaction)
 	r.POST("/bi-fast-esb/failed-processbulktransaction", controllers.FailedProcessBulkTransaction)
 	r.POST("/bi-fast-esb/report-prm-processbulktransaction", controllers.ReportPrmProcessBulkTransaction)
+	r.POST("/bi-fast-esb/success-qt-processbulktransaction", controllers.SuccessQtBulkTransaction)
+	r.POST("/bi-fast-esb/failed-qt-processbulktransaction", controllers.FailedQtBulkTransaction)
 
 	r.Run(":8084")
 }

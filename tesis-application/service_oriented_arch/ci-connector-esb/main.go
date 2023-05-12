@@ -59,6 +59,7 @@ func main() {
 
 	//For SOA
 	r.POST("/successtransaction", controllers.SuccessTransaction)
+	r.POST("/successbulktransaction", controllers.SuccessBulkTransaction)
 	r.POST("/failedtransaction", controllers.FailedTransaction)
 	r.POST("/retrievetransaction", controllers.RetrieveTransaction)
 

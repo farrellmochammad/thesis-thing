@@ -134,16 +134,19 @@ func BiHubUpdateBulkTransaction(c *gin.Context) {
 		}
 
 		if isSucess {
-			c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
 
 			middleware.JkdPost("http://localhost:8084/bihub-successtransaction", sentTransaction)
-			return
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"Status": "Not permitted"})
 
 			middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", sentTransaction)
-			return
 		}
+
 	}
+
+	c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
+
+	middleware.JkdPost("http://localhost:8084/bi-fast-esb/success-qt-processbulktransaction", input)
+
+	return
 
 }

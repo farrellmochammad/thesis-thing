@@ -124,6 +124,20 @@ func SuccessTransaction(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
+func SuccessBulkTransaction(c *gin.Context) {
+	analytic_url := c.MustGet("analytic_url").(string)
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	middleware.JkdPost(analytic_url+"/success-bulk-transaction-analytic", input)
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
+
 func FailedTransaction(c *gin.Context) {
 
 	analytic_url := c.MustGet("analytic_url").(string)

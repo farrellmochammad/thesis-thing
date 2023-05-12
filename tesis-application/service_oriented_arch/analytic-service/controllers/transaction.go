@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -71,7 +72,7 @@ func InputTransactionAnalytic(c *gin.Context) {
 
 }
 
-func BulkInputTransactionAnalytic(c *gin.Context) {
+func InputBulkTransactionAnalytic(c *gin.Context) {
 	session := c.MustGet("rdb").(*r.Session)
 
 	var input models.BulkTransaction
@@ -80,24 +81,13 @@ func BulkInputTransactionAnalytic(c *gin.Context) {
 		return
 	}
 
-	randBytes := make([]byte, 32)
-	_, err := rand.Read(randBytes)
-	if err != nil {
-		panic(err)
-	}
-
-	// Generate a hash of the random byte slice
-	hash := sha256.Sum256(randBytes)
-
-	input.BulkTransactionId = hex.EncodeToString(hash[:])
-
 	query_information_bulk_transaction := models.QueryInformationBulkTransaction{
 		ID:              input.BulkTransactionId,
 		BulkTransaction: input,
 		CreatedAt:       time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
 	}
 
-	_, err = r.DB("ci-connector-transaction").Table("query_information_bulk_transaction").Insert(query_information_bulk_transaction).RunWrite(session)
+	_, err := r.DB("ci-connector-transaction").Table("query_information_bulk_transaction").Insert(query_information_bulk_transaction).RunWrite(session)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -153,7 +143,7 @@ func InputTransactionIncomingAnalytic(c *gin.Context) {
 }
 
 func SuccessTransactionAnalytic(c *gin.Context) {
-	session := c.MustGet("rdb").(*r.Session)
+	// session := c.MustGet("rdb").(*r.Session)
 
 	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -161,9 +151,30 @@ func SuccessTransactionAnalytic(c *gin.Context) {
 		return
 	}
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
+	fmt.Println(input)
+
+	// _, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
+	// 	"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	// 	"Status":    "Success",
+	// }).RunWrite(session)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
+
+	c.JSON(http.StatusOK, gin.H{"data": input})
+}
+
+func SuccessBulkTransactionAnalytic(c *gin.Context) {
+	session := c.MustGet("rdb").(*r.Session)
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction").Get(input.BulkTransactionId).Update(map[string]interface{}{
 		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-		"Status":    "Success",
 	}).RunWrite(session)
 	if err != nil {
 		panic(err.Error())

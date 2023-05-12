@@ -170,7 +170,6 @@ func ValidateTransaction(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("Transaction ID : ", input.TransactionID)
 	_, err := r.DB("ci-connector-transaction").Table("query_information_transaction").Get(input.TransactionID).Update(map[string]interface{}{
 		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
 	}).RunWrite(session)
