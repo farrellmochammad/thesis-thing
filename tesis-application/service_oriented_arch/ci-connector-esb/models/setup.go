@@ -1,8 +1,11 @@
 package models
 
 import (
+	"errors"
+	"fmt"
 	"log"
 
+	"github.com/bxcodec/faker/v3"
 	r "gopkg.in/gorethink/gorethink.v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -26,6 +29,31 @@ func SetupModels() (*gorm.DB, error) {
 	err = DB.AutoMigrate(&BankAccount{})
 	if err != nil {
 		log.Fatalf("Error migrating database: %v", err)
+	}
+
+	// Check if the User table exists and insert seed data if it doesn't
+	if result := DB.Migrator().HasTable(&BankAccount{}); result {
+		var bankAccount BankAccount
+		if err := DB.First(&bankAccount).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+			for i := 0; i < 100; i++ {
+				DB.Create(&BankAccount{
+					AccountNumber: fmt.Sprintf("%d", i+1),
+					BankCode:      "1",
+					OwnerName:     faker.Name(),
+					Balance:       1000000.00,
+				})
+			}
+
+			for i := 0; i < 100; i++ {
+				DB.Create(&BankAccount{
+					AccountNumber: fmt.Sprintf("%d", i+1),
+					BankCode:      "2",
+					OwnerName:     faker.Name(),
+					Balance:       1000000.00,
+				})
+			}
+
+		}
 	}
 
 	return DB, err

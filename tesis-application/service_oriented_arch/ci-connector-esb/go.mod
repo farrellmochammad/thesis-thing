@@ -3,6 +3,7 @@ module ci-connector-esb
 go 1.20
 
 require (
+	github.com/bxcodec/faker/v3 v3.8.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/joho/godotenv v1.5.1
 	gopkg.in/gorethink/gorethink.v4 v4.1.0
