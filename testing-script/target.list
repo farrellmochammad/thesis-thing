@@ -1,3 +1,3 @@
-GET https://www.google.com
-GET https://www.google.com
-GET https://www.google.com
+POST http://localhost:8083/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-11.json

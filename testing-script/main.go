@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"time"
 
@@ -44,29 +45,40 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Generate random transaction data for 2 transactions
-	var bulkTxn BulkTransaction
-	bulkTxn.BulkTransactionId = faker.UUIDHyphenated()
-	bulkTxn.SenderAccountNumber = fmt.Sprintf("%d", rand.Intn(9)+1)
-	bulkTxn.SenderBankCode = fmt.Sprintf("%d", rand.Intn(4)+1)
+	for a := 0; a < 25; a++ {
+		var bulkTxn BulkTransaction
+		bulkTxn.BulkTransactionId = faker.UUIDHyphenated()
+		bulkTxn.SenderAccountNumber = fmt.Sprintf("%d", rand.Intn(9)+1)
+		bulkTxn.SenderBankCode = fmt.Sprintf("%d", rand.Intn(2)+1)
 
-	for i := 0; i < 25; i++ {
-		var txn Transaction
-		faker.FakeData(&txn)
+		bankCodeUse := "2"
+		if bulkTxn.SenderBankCode == "2" {
+			bankCodeUse = "1"
+		}
+		for i := 0; i < 100; i++ {
+			var txn Transaction
+			faker.FakeData(&txn)
 
-		// Override sender and receiver account numbers and bank codes
-		txn.SenderAccountNumber = bulkTxn.SenderAccountNumber
-		txn.SenderBankCode = bulkTxn.SenderBankCode
-		txn.ReceiverAccount = fmt.Sprintf("%d", rand.Intn(9)+1)
-		txn.ReceiverBankCode = fmt.Sprintf("%d", rand.Intn(9)+1)
+			// Override sender and receiver account numbers and bank codes
+			txn.SenderAccountNumber = bulkTxn.SenderAccountNumber
+			txn.SenderBankCode = bulkTxn.SenderBankCode
+			txn.ReceiverAccount = fmt.Sprintf("%d", rand.Intn(9)+1)
+			txn.ReceiverBankCode = bankCodeUse
 
-		bulkTxn.Transactions = append(bulkTxn.Transactions, txn)
+			bulkTxn.Transactions = append(bulkTxn.Transactions, txn)
+		}
+
+		// Convert to JSON
+		jsonData, err := json.MarshalIndent(bulkTxn, "", "  ")
+		if err != nil {
+			panic(err)
+		}
+
+		// Write to file
+		err = ioutil.WriteFile("transactions-"+fmt.Sprintf("%d", a+1)+".json", jsonData, 0644)
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	// Convert to JSON
-	jsonData, err := json.MarshalIndent(bulkTxn, "", "  ")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(string(jsonData))
 }
