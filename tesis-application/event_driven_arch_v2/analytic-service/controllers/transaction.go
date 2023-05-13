@@ -109,13 +109,11 @@ func InputBulkTransactionUpdateAnalytic(session *r.Session, payload string) {
 
 }
 
-func InputBulkTransactionIncomingAnalytic(c *gin.Context) {
-	session := c.MustGet("rdb").(*r.Session)
+func InputBulkTransactionIncomingAnalytic(session *r.Session, payload string) {
 
 	var input models.ReturnBulkTransaction
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := json.Unmarshal([]byte(payload), &input); err != nil {
+		panic(err)
 	}
 
 	send_information_bulk_transaction := models.SendInformationBulkTransaction{
@@ -128,8 +126,20 @@ func InputBulkTransactionIncomingAnalytic(c *gin.Context) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
 
-	c.JSON(http.StatusOK, gin.H{"data": input})
+func InputBulkTransactionFinishUpdateAnalytic(session *r.Session, payload string) {
+	var input models.ReturnBulkTransaction
+	if err := json.Unmarshal([]byte(payload), &input); err != nil {
+		panic(err)
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction").Get(input.BulkTransactionId).Update(map[string]interface{}{
+		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func InputTransactionIncomingAnalytic(c *gin.Context) {

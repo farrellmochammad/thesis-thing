@@ -72,53 +72,39 @@ func BiHubValidateTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload stri
 		return
 	}
 
-	// if isValidateAmount {
-	// 	middleware.JkdPost("http://localhost:8084/bi-fast-esb/prm-processtransaction", input)
-	// 	return
-	// }
-
-	// middleware.JkdPost("http://localhost:8084/bi-fast-esb/failed-processtransaction", input)
-
 }
 
-func BiHubValidateBulkTransaction(c *gin.Context) {
-
-	db := c.MustGet("db").(*gorm.DB)
+func BiHubValidateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload string) {
 
 	var input models.BulkTransaction
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := json.Unmarshal([]byte(payload), &input); err != nil {
+		panic(err)
 	}
 
 	isValidateSenderBank := logic.ValidateBulkBankSender(db, input)
 	if !isValidateSenderBank {
-		c.JSON(http.StatusBadRequest, gin.H{"Message": "Receiver bank doesn't exist"})
+		fmt.Println("Receiver bank doesn't exist")
 		return
 	}
 
 	isValidateAmount := logic.ValidateBulkAmount(db, input)
 	if !isValidateAmount {
-		c.JSON(http.StatusBadRequest, gin.H{"Message": "Amount not enough"})
+		fmt.Println("Amount not enough")
 		return
 	}
 
 	if isValidateAmount {
-		middleware.JkdPost("http://localhost:8084/bi-fast-esb/prm-processbulktransaction", input)
+		middleware.PublishMessage(mqtt_client, "topic/prm-process-bulk-transaction", input)
 		return
 	}
 
-	middleware.JkdPost("http://localhost:8084/bi-fast-esb/failed-processtransaction", input)
-
 }
 
-func BiHubUpdateBulkTransaction(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload string) {
 
 	var input models.ReturnBulkTransaction
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := json.Unmarshal([]byte(payload), &input); err != nil {
+		panic(err)
 	}
 
 	for _, t := range input.Transactions {
@@ -134,17 +120,15 @@ func BiHubUpdateBulkTransaction(c *gin.Context) {
 
 		if isSucess {
 
-			middleware.JkdPost("http://localhost:8084/bihub-successtransaction", sentTransaction)
+			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-success", sentTransaction)
 		} else {
 
-			middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", sentTransaction)
+			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-failed", sentTransaction)
 		}
 
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
-
-	middleware.JkdPost("http://localhost:8084/bi-fast-esb/success-qt-processbulktransaction", input)
+	middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-bulk-transaction-finish", input)
 
 	return
 

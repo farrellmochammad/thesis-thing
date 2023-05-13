@@ -33,10 +33,14 @@ func main() {
 	// set up a callback function for when a message is received
 	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
 
-		fmt.Println("income message", msg.Topic())
 		if msg.Topic() == "topic/bi-fast-hub-incoming-bulk-transaction" {
-			fmt.Println("Message incoming bulk transaction")
+			fmt.Println("Message incoming ", msg.Topic())
 			controllers.BiHubValidateTransaction(client, db, string(msg.Payload()))
+		}
+
+		if msg.Topic() == "topic/bi-fast-hub-execute-transaction" {
+			fmt.Println("Message incoming ", msg.Topic())
+			controllers.BiHubUpdateBulkTransaction(client, db, string(msg.Payload()))
 		}
 
 	})
@@ -48,7 +52,7 @@ func main() {
 	}
 
 	// subscribe to multiple topics of interest
-	topics := []string{"topic/bi-fast-hub-incoming-bulk-transaction", "topic/test1"}
+	topics := []string{"topic/bi-fast-hub-incoming-bulk-transaction", "topic/bi-fast-hub-execute-transaction"}
 
 	for _, topic := range topics {
 		if token := client.Subscribe(topic, 1, nil); token.Wait() && token.Error() != nil {
