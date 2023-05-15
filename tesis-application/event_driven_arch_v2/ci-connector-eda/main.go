@@ -73,5 +73,15 @@ func main() {
 	r.POST("/bulktransaction", controllers.CreateBulkTransaction)
 	r.POST("/validatebulktransaction", controllers.ValidateBulkTransaction)
 
-	r.Run(*port)
+	// Run the Gin server in a separate goroutine
+	go func() {
+		if err := r.Run(*port); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Perform other tasks or operations concurrently
+
+	// Keep the main goroutine alive
+	select {}
 }

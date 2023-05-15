@@ -44,5 +44,16 @@ func main() {
 	r.POST("/bi-fast-esb/success-qt-processbulktransaction", controllers.SuccessQtBulkTransaction)
 	r.POST("/bi-fast-esb/failed-qt-processbulktransaction", controllers.FailedQtBulkTransaction)
 
-	r.Run(":8084")
+	// Run the Gin server in a separate goroutine
+	go func() {
+		if err := r.Run(":8084"); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Perform other tasks or operations concurrently
+
+	// Keep the main goroutine alive
+	select {}
+
 }

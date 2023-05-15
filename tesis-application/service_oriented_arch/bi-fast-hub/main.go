@@ -28,5 +28,16 @@ func main() {
 
 	r.PUT("/bi-fast-hub/update-bulk-transaction", controllers.BiHubUpdateBulkTransaction)
 
-	r.Run(":8087")
+	// Run the Gin server in a separate goroutine
+	go func() {
+		if err := r.Run(":8087"); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Perform other tasks or operations concurrently
+
+	// Keep the main goroutine alive
+	select {}
+
 }

@@ -25,5 +25,15 @@ func main() {
 
 	r.POST("/prm-processbulktransaction", controllers.PrmProcessBulkTransaction)
 
-	r.Run(":8086")
+	// Run the Gin server in a separate goroutine
+	go func() {
+		if err := r.Run(":8086"); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Perform other tasks or operations concurrently
+
+	// Keep the main goroutine alive
+	select {}
 }

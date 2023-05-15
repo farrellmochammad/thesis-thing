@@ -1,0 +1,76 @@
+Time difference between CreatedAt and UpdatedAt: 1.915294s
+2023-05-15 11:44:49.667505 +0000 UTC
+2023-05-15 11:44:51.582799 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.062545s
+2023-05-15 11:44:49.412407 +0000 UTC
+2023-05-15 11:44:51.474952 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.271325s
+2023-05-15 11:44:49.290949 +0000 UTC
+2023-05-15 11:44:50.562274 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.062301s
+2023-05-15 11:44:49.431477 +0000 UTC
+2023-05-15 11:44:51.493778 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 88.619ms
+2023-05-15 11:44:49.166164 +0000 UTC
+2023-05-15 11:44:49.254783 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 232.35ms
+2023-05-15 11:44:48.980294 +0000 UTC
+2023-05-15 11:44:49.212644 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.052287s
+2023-05-15 11:44:49.458295 +0000 UTC
+2023-05-15 11:44:51.510582 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.566183s
+2023-05-15 11:44:49.317974 +0000 UTC
+2023-05-15 11:44:50.884157 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.885746s
+2023-05-15 11:44:49.707465 +0000 UTC
+2023-05-15 11:44:51.593211 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 101.539ms
+2023-05-15 11:44:49.141068 +0000 UTC
+2023-05-15 11:44:49.242607 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.942047s
+2023-05-15 11:44:49.354151 +0000 UTC
+2023-05-15 11:44:51.296198 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.051382s
+2023-05-15 11:44:49.474989 +0000 UTC
+2023-05-15 11:44:51.526371 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 108.753ms
+2023-05-15 11:44:49.197696 +0000 UTC
+2023-05-15 11:44:49.306449 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.006005s
+2023-05-15 11:44:49.547371 +0000 UTC
+2023-05-15 11:44:51.553376 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 220.227ms
+2023-05-15 11:44:49.013718 +0000 UTC
+2023-05-15 11:44:49.233945 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.033714s
+2023-05-15 11:44:49.508018 +0000 UTC
+2023-05-15 11:44:51.541732 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 990.151ms
+2023-05-15 11:44:49.272583 +0000 UTC
+2023-05-15 11:44:50.262734 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 320.022ms
+2023-05-15 11:44:48.865655 +0000 UTC
+2023-05-15 11:44:49.185677 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.919189s
+2023-05-15 11:44:49.339965 +0000 UTC
+2023-05-15 11:44:51.259154 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.059065s
+2023-05-15 11:44:49.399276 +0000 UTC
+2023-05-15 11:44:51.458341 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.966535s
+2023-05-15 11:44:49.598041 +0000 UTC
+2023-05-15 11:44:51.564576 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.944332s
+2023-05-15 11:44:49.366532 +0000 UTC
+2023-05-15 11:44:51.310864 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.857391s
+2023-05-15 11:44:49.746372 +0000 UTC
+2023-05-15 11:44:51.603763 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 2.030481s
+2023-05-15 11:44:49.378255 +0000 UTC
+2023-05-15 11:44:51.408736 +0000 UTC
+Time difference between CreatedAt and UpdatedAt: 1.944405s
+2023-05-15 11:44:49.626937 +0000 UTC
+2023-05-15 11:44:51.571342 +0000 UTC
+Total duration in seconds: 36.63

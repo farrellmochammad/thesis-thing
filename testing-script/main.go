@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/bxcodec/faker/v3"
@@ -44,8 +45,17 @@ type BulkTransaction struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	baseContent := `POST http://localhost:8083/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-%d.json`
+
+	filePath := "target.list"
+
+	transactionSize := 50
+
+	var content string
 	// Generate random transaction data for 2 transactions
-	for a := 0; a < 25; a++ {
+	for a := 0; a < transactionSize; a++ {
 		var bulkTxn BulkTransaction
 		bulkTxn.BulkTransactionId = faker.UUIDHyphenated()
 		bulkTxn.SenderAccountNumber = fmt.Sprintf("%d", rand.Intn(9)+1)
@@ -79,6 +89,16 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		content += fmt.Sprintf(baseContent, a+1) + "\n"
 	}
+
+	err := ioutil.WriteFile(filePath, []byte(content), 0644)
+	if err != nil {
+		fmt.Println("Error writing to file:", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("File created successfully!")
 
 }

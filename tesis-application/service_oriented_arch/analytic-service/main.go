@@ -52,5 +52,16 @@ func main() {
 	r.POST("/failed-transaction-analytic", controllers.FailedTransactionAnalytic)
 	r.POST("/retrieve-transaction-analytic", controllers.RetrieveTransactionAnalytic)
 
-	r.Run(*port)
+	// Run the Gin server in a separate goroutine
+	go func() {
+		if err := r.Run(*port); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Perform other tasks or operations concurrently
+
+	// Keep the main goroutine alive
+	select {}
+
 }
