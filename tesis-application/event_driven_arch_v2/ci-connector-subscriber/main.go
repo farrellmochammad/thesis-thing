@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -13,10 +14,14 @@ import (
 
 func main() {
 
+	bank_code := flag.String("bank_code", "1", "the port to listen on")
+	flag.Parse()
+
+	fmt.Println("ID : ", "mqtt-ci-connector-subscriber-bankcode-"+*bank_code)
 	// create a new MQTT client
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker("tcp://localhost:1883")
-	opts.SetClientID("mqtt-ci-connector-subscriber")
+	opts.SetClientID("mqtt-ci-connector-subscriber-bankcode-" + *bank_code)
 	opts.SetUsername("emqx")
 	opts.SetPassword("public")
 
@@ -26,14 +31,19 @@ func main() {
 	// set up a callback function for when a message is received
 	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
 
-		if msg.Topic() == "topic/query-information-bulk-transaction" {
+		if msg.Topic() == "topic/query-information-bulk-transaction"+*bank_code {
 			fmt.Println("Message incoming ", msg.Topic())
 			controllers.ValidateBulkTransaction(client, string(msg.Payload()))
 		}
 
-		if msg.Topic() == "topic/bi-fast-hub-execute-bulk-transaction-finish" {
+		if msg.Topic() == "topic/bi-fast-hub-execute-bulk-transaction-finish"+*bank_code {
 			fmt.Println("Message incoming ", msg.Topic())
 			controllers.BulkTransactionFinished(client, string(msg.Payload()))
+		}
+
+		if msg.Topic() == "topic/query-information-bulk-transaction-confirmation"+*bank_code {
+			fmt.Println("Message incoming ", msg.Topic())
+			controllers.SendQueryInformationConfirmation(client, string(msg.Payload()), *bank_code)
 		}
 	})
 
@@ -44,7 +54,7 @@ func main() {
 	}
 
 	// subscribe to multiple topics of interest
-	topics := []string{"topic/incoming-analytic-bulk-transaction", "topic/query-information-bulk-transaction", "topic/bi-fast-hub-execute-bulk-transaction-finish"}
+	topics := []string{"topic/incoming-analytic-bulk-transaction", "topic/query-information-bulk-transaction" + *bank_code, "topic/bi-fast-hub-execute-bulk-transaction-finish" + *bank_code, "topic/query-information-bulk-transaction-confirmation" + *bank_code}
 
 	for _, topic := range topics {
 		if token := client.Subscribe(topic, 1, nil); token.Wait() && token.Error() != nil {
@@ -54,7 +64,7 @@ func main() {
 	}
 
 	// listen for messages indefinitely
-	sigChan := make(chan os.Signal, 1)
+	sigChan := make(chan os.Signal, 2)
 	signal.Notify(sigChan, os.Interrupt)
 	for {
 		select {

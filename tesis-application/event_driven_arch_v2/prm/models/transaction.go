@@ -31,6 +31,7 @@ type BulkTransaction struct {
 	gorm.Model
 	BulkTransactionId   string        `json:"bulk_transaction_id"`
 	SenderBankCode      string        `json:"sender_bank_code"`
+	ReceiverBankCode    string        `json:"receiver_bank_code"`
 	SenderAccountNumber string        `json:"sender_account_number"`
 	Transactions        []Transaction `json:"transactions"`
 }
@@ -39,6 +40,7 @@ type ReturnBulkTransaction struct {
 	gorm.Model
 	BulkTransactionId string             `json:"bulk_transaction_id"`
 	BankSender        string             `json:"bank_sender"`
+	BankReceiver      string             `json:"bank_receiver"`
 	Transactions      []Transaction      `json:"transactions"`
 	FraudTransaction  []FraudTransaction `json:"fraud_transactions"`
 }

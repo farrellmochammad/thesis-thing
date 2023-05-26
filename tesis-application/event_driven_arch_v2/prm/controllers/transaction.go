@@ -93,15 +93,19 @@ func PrmProcessBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload str
 	}
 
 	bankSender, _, _ := logic.ValidateBankSenderBulk(db, input)
+	bankReceiver, _, _ := logic.ValidateBankReceiverBulk(db, input)
 
 	returnbulktransactions := models.ReturnBulkTransaction{
 		BulkTransactionId: input.BulkTransactionId,
 		BankSender:        bankSender.BankURL,
+		BankReceiver:      bankReceiver.BankURL,
 		Transactions:      input.Transactions,
 		FraudTransaction:  fraudtransactions,
 	}
 
-	middleware.PublishMessage(mqtt_client, "topic/query-information-bulk-transaction", returnbulktransactions)
+	middleware.PublishMessage(mqtt_client, "topic/query-information-bulk-transaction-confirmation"+bankReceiver.BankCode, returnbulktransactions)
+
+	// middleware.PublishMessage(mqtt_client, "topic/query-information-bulk-transaction", returnbulktransactions)
 	return
 
 }

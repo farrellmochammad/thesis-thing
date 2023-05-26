@@ -107,6 +107,8 @@ func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload st
 		panic(err)
 	}
 
+	bankCode := "0"
+
 	for _, t := range input.Transactions {
 		isSucess := logic.UpdateBalance(db, t)
 		bankReceiver, _, _ := logic.ValidateBankReceiver(db, t)
@@ -126,9 +128,12 @@ func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload st
 			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-failed", sentTransaction)
 		}
 
+		bankCode = bankSender.BankCode
+
 	}
 
-	middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-bulk-transaction-finish", input)
+	middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-bulk-transaction-finish"+bankCode, input)
+	// middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-bulk-transaction-finish", input)
 
 	return
 

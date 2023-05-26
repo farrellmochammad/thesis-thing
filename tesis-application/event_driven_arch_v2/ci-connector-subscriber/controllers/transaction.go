@@ -33,3 +33,15 @@ func BulkTransactionFinished(mqtt_client MQTT.Client, payload string) {
 
 	return
 }
+
+func SendQueryInformationConfirmation(mqtt_client MQTT.Client, payload string, bankcode string) {
+
+	var input models.ReturnBulkTransaction
+	if err := json.Unmarshal([]byte(payload), &input); err != nil {
+		panic(err)
+	}
+
+	middleware.PublishMessage(mqtt_client, "topic/query-information-bulk-transaction"+bankcode, input)
+
+	return
+}

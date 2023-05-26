@@ -18,6 +18,8 @@ import (
 func main() {
 
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
+	bank_code := flag.String("bank_code", "0", "the port to listen on")
+	flag.Parse()
 
 	options := rethink.ConnectOpts{
 		Address:  *rethink_port,
@@ -33,7 +35,7 @@ func main() {
 	// create a new MQTT client
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker("tcp://localhost:1883")
-	opts.SetClientID("mqtt-subscriber")
+	opts.SetClientID("mqtt-subscriber-analytic-" + *bank_code)
 	opts.SetUsername("emqx")
 	opts.SetPassword("public")
 
@@ -44,12 +46,12 @@ func main() {
 	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
 
 		fmt.Println("Incoming message ", msg.Topic())
-		if msg.Topic() == "topic/incoming-analytic-bulk-transaction" {
+		if msg.Topic() == "topic/incoming-analytic-bulk-transaction"+*bank_code {
 			fmt.Println("Message incoming analytic", msg.Topic())
 			controllers.InputBulkTransactionAnalytic(session, string(msg.Payload()))
 		}
 
-		if msg.Topic() == "topic/query-information-bulk-transaction" {
+		if msg.Topic() == "topic/query-information-bulk-transaction"+*bank_code {
 			fmt.Println("Message incoming ", msg.Topic())
 			controllers.InputBulkTransactionUpdateAnalytic(session, string(msg.Payload()))
 		}
@@ -73,7 +75,7 @@ func main() {
 	}
 
 	// subscribe to multiple topics of interest
-	topics := []string{"topic/incoming-analytic-bulk-transaction", "topic/query-information-bulk-transaction", "topic/ci-connector-execute-transaction", "topic/ci-connector-finished-transaction"}
+	topics := []string{"topic/incoming-analytic-bulk-transaction" + *bank_code, "topic/query-information-bulk-transaction" + *bank_code, "topic/ci-connector-execute-transaction", "topic/ci-connector-finished-transaction"}
 
 	for _, topic := range topics {
 		if token := client.Subscribe(topic, 1, nil); token.Wait() && token.Error() != nil {

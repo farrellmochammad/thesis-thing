@@ -93,7 +93,7 @@ func CreateBulkTransaction(c *gin.Context) {
 
 	input.BulkTransactionId = hex.EncodeToString(hash[:])
 
-	middleware.PublishMessage(mqtt_client, "topic/incoming-analytic-bulk-transaction", input)
+	middleware.PublishMessage(mqtt_client, "topic/incoming-analytic-bulk-transaction"+input.SenderBankCode, input)
 	middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-incoming-bulk-transaction", input)
 
 	c.JSON(http.StatusOK, gin.H{"data": input})
