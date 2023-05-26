@@ -39,6 +39,7 @@ func main() {
 
 	//Code for Bulk transaction
 	r.POST("/bi-fast-esb/prm-processbulktransaction", controllers.PrmProcessBulkTransaction)
+	r.POST("/bi-fast-esb/query-transaction-confirmation", controllers.QueryTransactionConfirmation)
 	r.POST("/bi-fast-esb/failed-processbulktransaction", controllers.FailedProcessBulkTransaction)
 	r.POST("/bi-fast-esb/report-prm-processbulktransaction", controllers.ReportPrmProcessBulkTransaction)
 	r.POST("/bi-fast-esb/success-qt-processbulktransaction", controllers.SuccessQtBulkTransaction)

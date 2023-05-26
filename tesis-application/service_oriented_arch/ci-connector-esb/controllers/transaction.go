@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -257,4 +258,17 @@ func CheckIncomeTransaction(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "OK"})
 	}
+}
+
+func QueryBulkTransactionConfirmation(c *gin.Context) {
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println("OK")
+
+	middleware.JkdPost(os.Getenv("BI_FAST_ESB_URL")+"/bi-fast-esb/query-transaction-confirmation", input)
+
 }

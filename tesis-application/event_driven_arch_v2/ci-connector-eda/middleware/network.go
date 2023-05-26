@@ -94,6 +94,6 @@ func PublishMessage(client mqtt.Client, topic string, payload interface{}) {
 		panic(err)
 	}
 
-	token := client.Publish(topic, 0, false, jsonData)
-	token.Wait()
+	client.Publish(topic, 0, false, jsonData)
+	// token.Wait()
 }

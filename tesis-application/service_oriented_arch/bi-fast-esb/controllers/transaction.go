@@ -210,6 +210,16 @@ func ReportPrmProcessBulkTransaction(c *gin.Context) {
 		return
 	}
 
+	middleware.JkdPost(input.BankReceiver+"/querybulktransactionconfirmation", input)
+}
+
+func QueryTransactionConfirmation(c *gin.Context) {
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	middleware.JkdPost(input.BankSender+"/validatebulktransaction", input)
 }
 

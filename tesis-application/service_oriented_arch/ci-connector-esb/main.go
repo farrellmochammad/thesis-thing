@@ -14,7 +14,7 @@ import (
 
 func main() {
 	port := flag.String("port", ":8083", "the port to listen on")
-	analytic_url := flag.String("analyticurl", "localhost:8088", "the port to listen for analytic service")
+	analytic_url := flag.String("analyticurl", "http://localhost:8088", "the port to listen for analytic service")
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
 	flag.Parse()
 
@@ -62,6 +62,7 @@ func main() {
 	r.POST("/successbulktransaction", controllers.SuccessBulkTransaction)
 	r.POST("/failedtransaction", controllers.FailedTransaction)
 	r.POST("/retrievetransaction", controllers.RetrieveTransaction)
+	r.POST("/querybulktransactionconfirmation", controllers.QueryBulkTransactionConfirmation)
 
 	//For Bulk Payment
 	r.POST("/bulktransaction", controllers.CreateBulkTransaction)

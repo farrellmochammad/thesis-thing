@@ -93,42 +93,18 @@ func PrmProcessBulkTransaction(c *gin.Context) {
 	}
 
 	bankSender, _, _ := logic.ValidateBankSenderBulk(db, input)
+	bankReceiver, _, _ := logic.ValidateBankReceiverBulk(db, input)
 
 	returnbulktransactions := models.ReturnBulkTransaction{
 		BulkTransactionId: input.BulkTransactionId,
 		BankSender:        bankSender.BankURL,
+		BankReceiver:      bankReceiver.BankURL,
 		Transactions:      input.Transactions,
 		FraudTransaction:  fraudtransactions,
 	}
 
 	middleware.JkdPost("http://localhost:8084/bi-fast-esb/report-prm-processbulktransaction", returnbulktransactions)
 	return
-	// var transaction models.Transaction
-	// result := db.Where("transaction_hash = ?", fraudtransaction.TransactionID).First(&transaction)
-
-	// if result.Error != nil {
-	// 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-	// 		// handle record not found error
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Transaction not found"})
-	// 	} else {
-	// 		// handle other errors
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
-	// 	}
-	// 	return
-	// }
-
-	// bankSender, _, _ := logic.ValidateBankSender(db, transaction)
-
-	// processtransaction := models.ProcessTransaction{
-	// 	Transaction:      transaction,
-	// 	FraudTransaction: fraudtransaction,
-	// 	BankSender:       bankSender.BankURL,
-	// }
-
-	// if isValidateAmount {
-	// 	middleware.JkdPost("http://localhost:8084/bi-fast-esb/report-prm-processtransaction", processtransaction)
-	// 	return
-	// }
 
 }
 
