@@ -2,6 +2,7 @@ version: "3.9"
 services:
   rethinkdb-1:
     image: rethinkdb:2.4
+    restart: always
     volumes:
       - rethinkdb-1-data:/data
     ports:
@@ -14,6 +15,7 @@ services:
       - rethinkdb-net
   rethinkdb-2:
     image: rethinkdb:2.4
+    restart: always
     volumes:
       - rethinkdb-2-data:/data
     ports:

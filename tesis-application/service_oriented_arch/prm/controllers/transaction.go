@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"prm/logger"
 	"prm/logic"
 	"prm/middleware"
 	"prm/models"
@@ -86,6 +87,9 @@ func PrmProcessBulkTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/prm-processbulktransaction/" + input.BulkTransactionId)
 
 	var fraudtransactions []models.FraudTransaction
 	for _, transaction := range input.Transactions {

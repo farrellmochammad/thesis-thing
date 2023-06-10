@@ -1,0 +1,150 @@
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-1.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-2.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-3.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-4.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-5.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-6.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-7.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-8.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-9.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-10.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-11.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-12.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-13.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-14.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-15.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-16.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-17.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-18.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-19.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-20.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-21.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-22.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-23.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-24.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-25.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-26.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-27.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-28.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-29.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-30.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-31.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-32.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-33.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-34.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-35.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-36.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-37.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-38.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-39.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-40.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-41.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-42.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-43.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-44.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-45.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-46.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-47.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-48.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-49.json
+POST http://localhost:8090/bulktransaction/
+Content-Type: application/json
+@/Users/farrell/Documents/kuliah/testing-script/transactions-50.json

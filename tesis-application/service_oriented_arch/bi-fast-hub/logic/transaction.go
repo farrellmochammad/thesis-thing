@@ -86,6 +86,7 @@ func GetTotalAmount(bt models.BulkTransaction) float64 {
 
 func UpdateBalance(db *gorm.DB, input models.Transaction) bool {
 	var bankAccount models.BankAccount
+
 	err := db.Model(&bankAccount).Where("account_number = ?", input.ReceiverAccount).Update("balance", gorm.Expr("balance + ?", input.Amount)).Error
 	if err != nil {
 		log.Fatal(err)

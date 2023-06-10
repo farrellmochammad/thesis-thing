@@ -246,3 +246,33 @@ func FailedQtBulkTransaction(c *gin.Context) {
 	middleware.JkdPost(input.BankSender+"/failedtransaction", input.Transaction)
 
 }
+
+func SuccessTransactionConfirmation(c *gin.Context) {
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankSender+"/successtransactionconfirmation", input)
+
+	// middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+
+}
+
+func FailTransactionConfirmation(c *gin.Context) {
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankSender+"/failtransactionconfirmation", input)
+
+	// middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+
+}

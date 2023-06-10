@@ -2,7 +2,9 @@ package main
 
 import (
 	"analytic-service/controllers"
+	"analytic-service/logger"
 	"analytic-service/models"
+
 	"flag"
 	"log"
 
@@ -37,8 +39,17 @@ func main() {
 	}
 	defer session.Close()
 
+	logger := logger.MyLogger{}
+
+	err = logger.Init("analytics.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
+
 	r.Use(func(c *gin.Context) {
 		c.Set("rdb", session)
+		c.Set("logger", logger)
 		c.Next()
 	})
 

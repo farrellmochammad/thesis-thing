@@ -2,7 +2,9 @@ package main
 
 import (
 	"bi-fast-esb/controllers"
+	"bi-fast-esb/logger"
 	"bi-fast-esb/models"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +18,17 @@ func main() {
 	}
 	models.DB = db
 
+	logger := logger.MyLogger{}
+
+	err = logger.Init("bi-fast-esb.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
+
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
+		c.Set("logger", logger)
 		c.Next()
 	})
 
@@ -44,6 +55,9 @@ func main() {
 	r.POST("/bi-fast-esb/report-prm-processbulktransaction", controllers.ReportPrmProcessBulkTransaction)
 	r.POST("/bi-fast-esb/success-qt-processbulktransaction", controllers.SuccessQtBulkTransaction)
 	r.POST("/bi-fast-esb/failed-qt-processbulktransaction", controllers.FailedQtBulkTransaction)
+
+	r.POST("/bi-fast-esb/success-transaction-confirmation", controllers.SuccessTransactionConfirmation)
+	r.POST("/bi-fast-esb/fail-transaction-confirmation", controllers.FailTransactionConfirmation)
 
 	// Run the Gin server in a separate goroutine
 	go func() {

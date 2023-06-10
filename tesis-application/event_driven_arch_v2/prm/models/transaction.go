@@ -41,6 +41,7 @@ type ReturnBulkTransaction struct {
 	BulkTransactionId string             `json:"bulk_transaction_id"`
 	BankSender        string             `json:"bank_sender"`
 	BankReceiver      string             `json:"bank_receiver"`
+	BankSenderCode    string             `json:"bank_sender_code"`
 	Transactions      []Transaction      `json:"transactions"`
 	FraudTransaction  []FraudTransaction `json:"fraud_transactions"`
 }

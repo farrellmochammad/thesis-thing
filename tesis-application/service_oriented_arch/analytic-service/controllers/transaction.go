@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"analytic-service/logger"
 	"analytic-service/models"
 
 	"github.com/gin-gonic/gin"
@@ -81,6 +82,9 @@ func InputBulkTransactionAnalytic(c *gin.Context) {
 		return
 	}
 
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/input-bulk-transaction-analytic/" + input.BulkTransactionId)
+
 	query_information_bulk_transaction := models.QueryInformationBulkTransaction{
 		ID:              input.BulkTransactionId,
 		BulkTransaction: input,
@@ -105,6 +109,9 @@ func InputBulkTransactionUpdateAnalytic(c *gin.Context) {
 		return
 	}
 
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/input-bulk-transaction-update-analytic/" + input.BulkTransactionId)
+
 	_, err := r.DB("ci-connector-transaction").Table("query_information_bulk_transaction").Get(input.BulkTransactionId).Update(map[string]interface{}{
 		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
 	}).RunWrite(session)
@@ -123,6 +130,9 @@ func InputBulkTransactionIncomingAnalytic(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/input-bulk-transaction-incoming-analytic/" + input.BulkTransactionId)
 
 	send_information_bulk_transaction := models.SendInformationBulkTransaction{
 		ID:               input.BulkTransactionId,
@@ -192,8 +202,12 @@ func SuccessBulkTransactionAnalytic(c *gin.Context) {
 		return
 	}
 
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/success-bulk-transaction-analytic/" + input.BulkTransactionId)
+
 	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction").Get(input.BulkTransactionId).Update(map[string]interface{}{
 		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+		"Status":    "Success",
 	}).RunWrite(session)
 	if err != nil {
 		panic(err.Error())

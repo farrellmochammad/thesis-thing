@@ -2,7 +2,9 @@ package main
 
 import (
 	"bi-fast-hub/controllers"
+	"bi-fast-hub/logger"
 	"bi-fast-hub/models"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +18,17 @@ func main() {
 	}
 	models.DB = db
 
+	logger := logger.MyLogger{}
+
+	err = logger.Init("bi-fast-hub.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
+
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
+		c.Set("logger", logger)
 		c.Next()
 	})
 

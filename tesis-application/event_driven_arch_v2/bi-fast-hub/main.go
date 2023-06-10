@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"time"
 
 	"bi-fast-hub/controllers"
+	"bi-fast-hub/logger"
 	"bi-fast-hub/models"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -20,6 +22,14 @@ func main() {
 	}
 	models.DB = db
 
+	logger := logger.MyLogger{}
+
+	err = logger.Init("bi-fast-hub.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
+
 	// create a new MQTT client
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker("tcp://localhost:1883")
@@ -30,26 +40,52 @@ func main() {
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 
+	// create a new MQTT client
+	// opts1 := MQTT.NewClientOptions()
+	// opts1.AddBroker("tcp://localhost:1885")
+	// opts1.SetClientID("mqtt-subscriber-bi-fast-hub")
+	// opts1.SetUsername("emqx")
+	// opts1.SetPassword("public")
+
+	// opts1.OnConnect = connectHandler
+	// opts1.OnConnectionLost = connectLostHandler
+
 	// set up a callback function for when a message is received
 	opts.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
 
 		if msg.Topic() == "topic/bi-fast-hub-incoming-bulk-transaction" {
 			fmt.Println("Message incoming ", msg.Topic())
-			controllers.BiHubValidateTransaction(client, db, string(msg.Payload()))
+			controllers.BiHubValidateTransaction(client, db, string(msg.Payload()), logger)
 		}
 
 		if msg.Topic() == "topic/bi-fast-hub-execute-transaction" {
 			fmt.Println("Message incoming ", msg.Topic())
-			controllers.BiHubUpdateBulkTransaction(client, db, string(msg.Payload()))
+			controllers.BiHubUpdateBulkTransaction(client, db, string(msg.Payload()), logger)
 		}
 
 	})
+
+	// set up a callback function for when a message is received
+	// opts1.SetDefaultPublishHandler(func(client MQTT.Client, msg MQTT.Message) {
+
+	// 	if msg.Topic() == "topic/bi-fast-hub-execute-transaction" {
+	// 		fmt.Println("Message incoming ", msg.Topic())
+	// 		controllers.BiHubUpdateBulkTransaction(client, db, string(msg.Payload()))
+	// 	}
+
+	// })
 
 	// connect to the MQTT broker
 	client := MQTT.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
+
+	// connect to the MQTT broker
+	// client1 := MQTT.NewClient(opts1)
+	// if token1 := client1.Connect(); token1.Wait() && token1.Error() != nil {
+	// 	panic(token1.Error())
+	// }
 
 	// subscribe to multiple topics of interest
 	topics := []string{"topic/bi-fast-hub-incoming-bulk-transaction", "topic/bi-fast-hub-execute-transaction"}
@@ -60,6 +96,13 @@ func main() {
 		}
 		fmt.Printf("Subscribed to topic '%s'\n", topic)
 	}
+
+	// for _, topic := range topics {
+	// 	if token := client1.Subscribe(topic, 1, nil); token.Wait() && token.Error() != nil {
+	// 		panic(token.Error())
+	// 	}
+	// 	fmt.Printf("Subscribed to topic '%s'\n", topic)
+	// }
 
 	// listen for messages indefinitely
 	sigChan := make(chan os.Signal, 1)

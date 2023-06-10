@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"prm/controllers"
+	"prm/logger"
 	"prm/models"
 
 	"github.com/gin-gonic/gin"
@@ -16,8 +18,17 @@ func main() {
 	}
 	models.DB = db
 
+	logger := logger.MyLogger{}
+
+	err = logger.Init("prm.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
+
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
+		c.Set("logger", logger)
 		c.Next()
 	})
 

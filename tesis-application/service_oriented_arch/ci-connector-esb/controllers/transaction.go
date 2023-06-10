@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 
+	"ci-connector-esb/logger"
 	"ci-connector-esb/middleware"
 	"ci-connector-esb/models"
 
@@ -74,6 +75,7 @@ func CreateTransaction(c *gin.Context) {
 
 func CreateBulkTransaction(c *gin.Context) {
 	analytic_url := c.MustGet("analytic_url").(string)
+	logger := c.MustGet("logger").(logger.MyLogger)
 
 	var input models.BulkTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -91,6 +93,8 @@ func CreateBulkTransaction(c *gin.Context) {
 	hash := sha256.Sum256(randBytes)
 
 	input.BulkTransactionId = hex.EncodeToString(hash[:])
+
+	logger.Log("/bulktransaction/" + input.BulkTransactionId)
 
 	middleware.JkdPost(analytic_url+"/input-bulk-transaction-analytic", input)
 	middleware.JkdPost(os.Getenv("BI_FAST_ESB_URL")+"/processbulktransaction", input)
@@ -125,6 +129,45 @@ func SuccessTransaction(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
+func SuccessTransactionConfirmation(c *gin.Context) {
+
+	logger := c.MustGet("logger").(logger.MyLogger)
+
+	var input models.ReturnBulkTransaction
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	logger.Log("/successtransactionconfirmation/" + input.BulkTransactionId)
+
+	c.JSON(http.StatusOK, gin.H{"Status": "Ok"})
+	return
+
+	// // middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	// middleware.JkdPost(input.BankSender+"/successbulktransaction", input)
+
+	// // middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+
+}
+
+func FailTransactionConfirmation(c *gin.Context) {
+
+	c.JSON(http.StatusOK, gin.H{"Status": "Ok"})
+	return
+	// var input models.ReturnBulkTransaction
+	// if err := c.ShouldBindJSON(&input); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	// // middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	// middleware.JkdPost(input.BankSender+"/successbulktransaction", input)
+
+	// // middleware.JkdPost("http://localhost:8086/prm-processtransaction", input)
+
+}
+
 func SuccessBulkTransaction(c *gin.Context) {
 	analytic_url := c.MustGet("analytic_url").(string)
 
@@ -133,6 +176,9 @@ func SuccessBulkTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/successbulktransaction/" + input.BulkTransactionId)
 
 	middleware.JkdPost(analytic_url+"/success-bulk-transaction-analytic", input)
 
@@ -193,6 +239,8 @@ func ValidateBulkTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/validatebulktransaction/" + input.BulkTransactionId)
 
 	// Marshal the struct to a JSON-encoded byte slice
 	jsonBytes, err := json.Marshal(input)

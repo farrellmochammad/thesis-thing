@@ -2,7 +2,9 @@ package main
 
 import (
 	"ci-connector-eda/controllers"
+	"ci-connector-eda/logger"
 	"ci-connector-eda/models"
+
 	"flag"
 	"log"
 
@@ -13,7 +15,7 @@ import (
 )
 
 func main() {
-	port := flag.String("port", ":8083", "the port to listen on")
+	port := flag.String("port", ":8090", "the port to listen on")
 	analytic_url := flag.String("analyticurl", "localhost:8088", "the port to listen for analytic service")
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
 	flag.Parse()
@@ -23,6 +25,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	logger := logger.MyLogger{}
+
+	err = logger.Init("ci-connector-eda.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
 
 	r := gin.Default()
 
@@ -48,11 +58,18 @@ func main() {
 		panic(err.Error())
 	}
 
+	mqttClientAnalytic := models.SetupMqtt("localhost", 1884)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 		c.Set("rdb", session)
 		c.Set("analytic_url", *analytic_url)
 		c.Set("mqtt_client", mqttClient)
+		c.Set("mqtt_client_analytic", mqttClientAnalytic)
+		c.Set("logger", logger)
 		c.Next()
 	})
 

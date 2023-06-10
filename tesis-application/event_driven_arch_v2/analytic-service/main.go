@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"time"
 
 	"analytic-service/controllers"
+	"analytic-service/logger"
 	"analytic-service/models"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -32,9 +34,16 @@ func main() {
 	}
 	defer session.Close()
 
+	logger := logger.MyLogger{}
+
+	err = logger.Init("analytic.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+
 	// create a new MQTT client
 	opts := MQTT.NewClientOptions()
-	opts.AddBroker("tcp://localhost:1883")
+	opts.AddBroker("tcp://localhost:1884")
 	opts.SetClientID("mqtt-subscriber-analytic-" + *bank_code)
 	opts.SetUsername("emqx")
 	opts.SetPassword("public")
@@ -48,22 +57,22 @@ func main() {
 		fmt.Println("Incoming message ", msg.Topic())
 		if msg.Topic() == "topic/incoming-analytic-bulk-transaction"+*bank_code {
 			fmt.Println("Message incoming analytic", msg.Topic())
-			controllers.InputBulkTransactionAnalytic(session, string(msg.Payload()))
+			controllers.InputBulkTransactionAnalytic(session, string(msg.Payload()), logger)
 		}
 
 		if msg.Topic() == "topic/query-information-bulk-transaction"+*bank_code {
 			fmt.Println("Message incoming ", msg.Topic())
-			controllers.InputBulkTransactionUpdateAnalytic(session, string(msg.Payload()))
+			controllers.InputBulkTransactionUpdateAnalytic(session, string(msg.Payload()), logger)
 		}
 
-		if msg.Topic() == "topic/ci-connector-execute-transaction" {
+		if msg.Topic() == "topic/ci-connector-execute-transaction"+*bank_code {
 			fmt.Println("Message incoming ", msg.Topic())
-			controllers.InputBulkTransactionIncomingAnalytic(session, string(msg.Payload()))
+			controllers.InputBulkTransactionIncomingAnalytic(session, string(msg.Payload()), logger)
 		}
 
 		if msg.Topic() == "topic/ci-connector-finished-transaction" {
 			fmt.Println("Message incoming ", msg.Topic())
-			controllers.InputBulkTransactionFinishUpdateAnalytic(session, string(msg.Payload()))
+			controllers.InputBulkTransactionFinishUpdateAnalytic(session, string(msg.Payload()), logger)
 		}
 
 	})
@@ -75,7 +84,7 @@ func main() {
 	}
 
 	// subscribe to multiple topics of interest
-	topics := []string{"topic/incoming-analytic-bulk-transaction" + *bank_code, "topic/query-information-bulk-transaction" + *bank_code, "topic/ci-connector-execute-transaction", "topic/ci-connector-finished-transaction"}
+	topics := []string{"topic/incoming-analytic-bulk-transaction" + *bank_code, "topic/query-information-bulk-transaction" + *bank_code, "topic/ci-connector-execute-transaction" + *bank_code, "topic/ci-connector-finished-transaction"}
 
 	for _, topic := range topics {
 		if token := client.Subscribe(topic, 1, nil); token.Wait() && token.Error() != nil {

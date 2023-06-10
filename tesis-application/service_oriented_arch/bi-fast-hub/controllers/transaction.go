@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"bi-fast-hub/logger"
 	"bi-fast-hub/logic"
 	"bi-fast-hub/middleware"
 	"bi-fast-hub/models"
@@ -92,6 +93,9 @@ func BiHubValidateBulkTransaction(c *gin.Context) {
 		return
 	}
 
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/bi-fast-hub/validate-bulk-transaction" + input.BulkTransactionId)
+
 	isValidateSenderBank := logic.ValidateBulkBankSender(db, input)
 	if !isValidateSenderBank {
 		c.JSON(http.StatusBadRequest, gin.H{"Message": "Receiver bank doesn't exist"})
@@ -122,6 +126,9 @@ func BiHubUpdateBulkTransaction(c *gin.Context) {
 		return
 	}
 
+	logger := c.MustGet("logger").(logger.MyLogger)
+	logger.Log("/bi-fast-hub/update-bulk-transaction" + input.BulkTransactionId)
+
 	for _, t := range input.Transactions {
 		isSucess := logic.UpdateBalance(db, t)
 		bankReceiver, _, _ := logic.ValidateBankReceiver(db, t)
@@ -134,19 +141,16 @@ func BiHubUpdateBulkTransaction(c *gin.Context) {
 		}
 
 		if isSucess {
-
-			middleware.JkdPost("http://localhost:8084/bihub-successtransaction", sentTransaction)
+			middleware.JkdPost("http://localhost:8084/bi-fast-esb/success-transaction-confirmation", sentTransaction)
 		} else {
 
-			middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", sentTransaction)
+			middleware.JkdPost("http://localhost:8084/bi-fast-esb/fail-transaction-confirmation", sentTransaction)
 		}
 
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
-
 	middleware.JkdPost("http://localhost:8084/bi-fast-esb/success-qt-processbulktransaction", input)
 
+	c.JSON(http.StatusAccepted, gin.H{"Status": "OK"})
 	return
-
 }

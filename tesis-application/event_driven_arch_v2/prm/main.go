@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"time"
 
 	"prm/controllers"
+	"prm/logger"
 	"prm/models"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -19,6 +21,13 @@ func main() {
 		panic("Failed to connect to database!")
 	}
 	models.DB = db
+
+	logger := logger.MyLogger{}
+
+	err = logger.Init("prm.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
 
 	// create a new MQTT client
 	opts := MQTT.NewClientOptions()
@@ -35,7 +44,7 @@ func main() {
 
 		if msg.Topic() == "topic/prm-process-bulk-transaction" {
 			fmt.Println("Message incoming bulk transaction")
-			controllers.PrmProcessBulkTransaction(client, db, string(msg.Payload()))
+			controllers.PrmProcessBulkTransaction(client, db, string(msg.Payload()), logger)
 		}
 
 	})

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	"ci-connector-eda/logger"
 	"ci-connector-eda/middleware"
 	"ci-connector-eda/models"
 
@@ -75,6 +76,8 @@ func CreateTransaction(c *gin.Context) {
 
 func CreateBulkTransaction(c *gin.Context) {
 	mqtt_client := c.MustGet("mqtt_client").(mqtt.Client)
+	mqtt_client_anayltic := c.MustGet("mqtt_client_analytic").(mqtt.Client)
+	logger := c.MustGet("logger").(logger.MyLogger)
 
 	var input models.BulkTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -93,7 +96,9 @@ func CreateBulkTransaction(c *gin.Context) {
 
 	input.BulkTransactionId = hex.EncodeToString(hash[:])
 
-	middleware.PublishMessage(mqtt_client, "topic/incoming-analytic-bulk-transaction"+input.SenderBankCode, input)
+	logger.Log("/bulktransaction/" + input.BulkTransactionId)
+
+	middleware.PublishMessage(mqtt_client_anayltic, "topic/incoming-analytic-bulk-transaction"+input.SenderBankCode, input)
 	middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-incoming-bulk-transaction", input)
 
 	c.JSON(http.StatusOK, gin.H{"data": input})

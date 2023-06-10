@@ -38,6 +38,7 @@ type Transaction struct {
 type BulkTransaction struct {
 	BulkTransactionId   string        `json:"bulk_transaction_id"`
 	SenderBankCode      string        `json:"sender_bank_code"`
+	ReceiverBankCode    string        `json:"receiver_bank_code"`
 	SenderAccountNumber string        `json:"sender_account_number"`
 	Transactions        []Transaction `json:"transactions"`
 }
@@ -47,11 +48,13 @@ func main() {
 
 	baseContent := `POST http://localhost:8083/bulktransaction/
 Content-Type: application/json
-@/Users/farrell/Documents/kuliah/testing-script/transactions-%d.json`
+@/Users/farrell/Documents/kuliah/testing-script/transactions-%d-%d.json`
 
-	filePath := "target.list"
+	transactionSize := 75
 
-	transactionSize := 50
+	transfercount := 100
+
+	filePath := "target-" + fmt.Sprintf("%d", transfercount) + ".list"
 
 	var content string
 	// Generate random transaction data for 2 transactions
@@ -64,8 +67,13 @@ Content-Type: application/json
 		bankCodeUse := "2"
 		if bulkTxn.SenderBankCode == "2" {
 			bankCodeUse = "1"
+			bulkTxn.ReceiverBankCode = "1"
 		}
-		for i := 0; i < 100; i++ {
+
+		if bulkTxn.SenderBankCode == "1" {
+			bulkTxn.ReceiverBankCode = "2"
+		}
+		for i := 0; i < transfercount; i++ {
 			var txn Transaction
 			faker.FakeData(&txn)
 
@@ -85,12 +93,12 @@ Content-Type: application/json
 		}
 
 		// Write to file
-		err = ioutil.WriteFile("transactions-"+fmt.Sprintf("%d", a+1)+".json", jsonData, 0644)
+		err = ioutil.WriteFile("transactions-"+fmt.Sprintf("%d", a+1)+"-"+fmt.Sprintf("%d", transfercount)+".json", jsonData, 0644)
 		if err != nil {
 			panic(err)
 		}
 
-		content += fmt.Sprintf(baseContent, a+1) + "\n"
+		content += fmt.Sprintf(baseContent, a+1, transfercount) + "\n"
 	}
 
 	err := ioutil.WriteFile(filePath, []byte(content), 0644)

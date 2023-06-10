@@ -54,14 +54,14 @@ type QueryInformationBulkTransactionWithDuration struct {
 }
 
 func main() {
-	QueryInformationTesting()
-	QueryTransactionTesting()
+	QueryInformationTesting("query_information_75_tps_100_soa", "query_information_bulk_transaction")
+	QueryTransactionTesting("query_transaction_75_tps_100_soa", "send_information_bulk_transaction")
 
 }
 
-func QueryInformationTesting() {
+func QueryInformationTesting(filename string, table string) {
 	// Create the output CSV file
-	file, err := os.Create("query_information.csv")
+	file, err := os.Create(filename + ".csv")
 	if err != nil {
 		panic(err)
 	}
@@ -88,7 +88,7 @@ func QueryInformationTesting() {
 	defer session.Close()
 
 	// Get all data from the "persons" table
-	cursor, err := r.Table("query_information_bulk_transaction").Run(session)
+	cursor, err := r.Table(table).Run(session)
 	if err != nil {
 		panic(err)
 	}
@@ -161,9 +161,9 @@ func QueryInformationTesting() {
 	fmt.Println("CSV file generated successfully.")
 }
 
-func QueryTransactionTesting() {
+func QueryTransactionTesting(filename string, table string) {
 	// Create the output CSV file
-	file, err := os.Create("query_transaction.csv")
+	file, err := os.Create(filename + ".csv")
 	if err != nil {
 		panic(err)
 	}
@@ -190,7 +190,7 @@ func QueryTransactionTesting() {
 	defer session.Close()
 
 	// Get all data from the "persons" table
-	cursor, err := r.Table("send_information_bulk_transaction").Run(session)
+	cursor, err := r.Table(table).Run(session)
 	if err != nil {
 		panic(err)
 	}

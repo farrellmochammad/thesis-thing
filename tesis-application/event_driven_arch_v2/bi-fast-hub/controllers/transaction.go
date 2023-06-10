@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"bi-fast-hub/logger"
 	"bi-fast-hub/logic"
 	"bi-fast-hub/middleware"
 	"bi-fast-hub/models"
@@ -48,9 +49,10 @@ func UpdateTransaction(c *gin.Context) {
 
 }
 
-func BiHubValidateTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload string) {
+func BiHubValidateTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload string, logger logger.MyLogger) {
 
 	var input models.BulkTransaction
+	logger.Log("topic/bi-fast-hub-incoming-bulk-transaction start " + input.BulkTransactionId)
 	if err := json.Unmarshal([]byte(payload), &input); err != nil {
 		panic(err)
 	}
@@ -66,6 +68,8 @@ func BiHubValidateTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload stri
 		fmt.Println("Amount not enough")
 		return
 	}
+
+	logger.Log("topic/bi-fast-hub-incoming-bulk-transaction finish" + input.BulkTransactionId)
 
 	if isValidateAmount {
 		middleware.PublishMessage(mqtt_client, "topic/prm-process-bulk-transaction", input)
@@ -100,12 +104,14 @@ func BiHubValidateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload 
 
 }
 
-func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload string) {
+func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload string, logger logger.MyLogger) {
 
 	var input models.ReturnBulkTransaction
 	if err := json.Unmarshal([]byte(payload), &input); err != nil {
 		panic(err)
 	}
+
+	logger.Log("topic/bi-fast-hub-execute-transaction start" + input.BulkTransactionId)
 
 	bankCode := "0"
 
@@ -132,8 +138,9 @@ func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload st
 
 	}
 
+	logger.Log("topic/bi-fast-hub-execute-transaction finish" + input.BulkTransactionId)
+
 	middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-bulk-transaction-finish"+bankCode, input)
-	// middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-bulk-transaction-finish", input)
 
 	return
 

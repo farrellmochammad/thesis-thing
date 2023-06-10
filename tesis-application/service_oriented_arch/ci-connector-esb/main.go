@@ -2,7 +2,9 @@ package main
 
 import (
 	"ci-connector-esb/controllers"
+	"ci-connector-esb/logger"
 	"ci-connector-esb/models"
+
 	"flag"
 	"log"
 
@@ -23,6 +25,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	logger := logger.MyLogger{}
+
+	err = logger.Init("ci-connector-esb.log")
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer logger.Close()
 
 	r := gin.Default()
 
@@ -47,6 +57,7 @@ func main() {
 		c.Set("db", db)
 		c.Set("rdb", session)
 		c.Set("analytic_url", *analytic_url)
+		c.Set("logger", logger)
 		c.Next()
 	})
 
@@ -59,6 +70,8 @@ func main() {
 
 	//For SOA
 	r.POST("/successtransaction", controllers.SuccessTransaction)
+	r.POST("/successtransactionconfirmation", controllers.SuccessTransactionConfirmation)
+	r.POST("/failtransactionconfirmation", controllers.FailTransactionConfirmation)
 	r.POST("/successbulktransaction", controllers.SuccessBulkTransaction)
 	r.POST("/failedtransaction", controllers.FailedTransaction)
 	r.POST("/retrievetransaction", controllers.RetrieveTransaction)
