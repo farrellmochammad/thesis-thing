@@ -164,7 +164,7 @@ func BiHubSuccessTransaction(c *gin.Context) {
 		return
 	}
 
-	// middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
+	middleware.JkdPost(input.BankReceiver+"/retrievetransaction", input.Transaction)
 	middleware.JkdPost(input.BankSender+"/successtransaction", input.Transaction)
 
 }

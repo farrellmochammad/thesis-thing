@@ -18,6 +18,7 @@ func main() {
 	port := flag.String("port", ":8090", "the port to listen on")
 	analytic_url := flag.String("analyticurl", "localhost:8088", "the port to listen for analytic service")
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
 	flag.Parse()
 
 	// Load environment variables from .env file
@@ -28,7 +29,7 @@ func main() {
 
 	logger := logger.MyLogger{}
 
-	err = logger.Init("ci-connector-eda.log")
+	err = logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}

@@ -21,6 +21,7 @@ func main() {
 
 	rethink_port := flag.String("rethink", "localhost:28015", "the port to listen on")
 	bank_code := flag.String("bank_code", "0", "the port to listen on")
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
 	flag.Parse()
 
 	options := rethink.ConnectOpts{
@@ -36,7 +37,7 @@ func main() {
 
 	logger := logger.MyLogger{}
 
-	err = logger.Init("analytic.log")
+	err = logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}
@@ -75,6 +76,11 @@ func main() {
 			controllers.InputBulkTransactionFinishUpdateAnalytic(session, string(msg.Payload()), logger)
 		}
 
+		if msg.Topic() == "topic/ci-connector-finished-execute-transaction" {
+			fmt.Println("Message incoming ", msg.Topic())
+			controllers.SuccessBulkTransactionAnalytic(session, string(msg.Payload()), logger)
+		}
+
 	})
 
 	// connect to the MQTT broker
@@ -84,7 +90,12 @@ func main() {
 	}
 
 	// subscribe to multiple topics of interest
-	topics := []string{"topic/incoming-analytic-bulk-transaction" + *bank_code, "topic/query-information-bulk-transaction" + *bank_code, "topic/ci-connector-execute-transaction" + *bank_code, "topic/ci-connector-finished-transaction"}
+	topics := []string{
+		"topic/incoming-analytic-bulk-transaction" + *bank_code,
+		"topic/query-information-bulk-transaction" + *bank_code,
+		"topic/ci-connector-execute-transaction" + *bank_code,
+		"topic/ci-connector-finished-transaction",
+		"topic/ci-connector-finished-execute-transaction"}
 
 	for _, topic := range topics {
 		if token := client.Subscribe(topic, 1, nil); token.Wait() && token.Error() != nil {

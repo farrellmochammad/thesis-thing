@@ -134,6 +134,8 @@ func BiHubUpdateBulkTransaction(c *gin.Context) {
 		bankReceiver, _, _ := logic.ValidateBankReceiver(db, t)
 		bankSender, _, _ := logic.ValidateBankSender(db, t)
 
+		t.TransactionHash = input.BulkTransactionId
+
 		sentTransaction := models.SentTransaction{
 			Transaction:  t,
 			BankSender:   bankSender.BankURL,
@@ -141,10 +143,9 @@ func BiHubUpdateBulkTransaction(c *gin.Context) {
 		}
 
 		if isSucess {
-			middleware.JkdPost("http://localhost:8084/bi-fast-esb/success-transaction-confirmation", sentTransaction)
+			middleware.JkdPost("http://localhost:8084/bihub-successtransaction", sentTransaction)
 		} else {
-
-			middleware.JkdPost("http://localhost:8084/bi-fast-esb/fail-transaction-confirmation", sentTransaction)
+			middleware.JkdPost("http://localhost:8084/bihub-failedtransaction", sentTransaction)
 		}
 
 	}

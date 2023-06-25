@@ -76,20 +76,32 @@ func InputBulkTransactionIncomingAnalytic(session *r.Session, payload string, lo
 }
 
 func InputBulkTransactionFinishUpdateAnalytic(session *r.Session, payload string, logger logger.MyLogger) {
-	var input models.ReturnBulkTransaction
+	var input models.Transaction
 	if err := json.Unmarshal([]byte(payload), &input); err != nil {
 		panic(err)
 	}
 
-	logger.Log("topic/ci-connector-finished-transaction" + input.BulkTransactionId)
+	logger.Log("topic/ci-connector-finished-transaction" + input.TransactionHash)
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction_eda").Get(input.BulkTransactionId).Update(map[string]interface{}{
-		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-		"Status":    "Success",
-	}).RunWrite(session)
+	retrieve_transaction := models.RetrieveTransaction{
+		ID:          input.TransactionHash,
+		Transaction: input,
+		Status:      "Success",
+		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}
+
+	_, err := r.DB("ci-connector-transaction").Table("retrieve_transactions_eda").Insert(retrieve_transaction).RunWrite(session)
 	if err != nil {
 		panic(err.Error())
 	}
+
+	// _, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction_eda").Get(input.BulkTransactionId).Update(map[string]interface{}{
+	// 	"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	// 	"Status":    "Success",
+	// }).RunWrite(session)
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 }
 
 func InputTransactionIncomingAnalytic(c *gin.Context) {
@@ -137,13 +149,11 @@ func SuccessTransactionAnalytic(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
-func SuccessBulkTransactionAnalytic(c *gin.Context) {
-	session := c.MustGet("rdb").(*r.Session)
+func SuccessBulkTransactionAnalytic(session *r.Session, payload string, logger logger.MyLogger) {
 
 	var input models.ReturnBulkTransaction
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := json.Unmarshal([]byte(payload), &input); err != nil {
+		panic(err)
 	}
 
 	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction_eda").Get(input.BulkTransactionId).Update(map[string]interface{}{
@@ -153,7 +163,6 @@ func SuccessBulkTransactionAnalytic(c *gin.Context) {
 		panic(err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": input})
 }
 
 func FailedTransactionAnalytic(c *gin.Context) {

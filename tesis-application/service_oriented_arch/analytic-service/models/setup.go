@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"log"
 
 	r "gopkg.in/gorethink/gorethink.v4"
@@ -37,17 +38,125 @@ func CreateSession(options r.ConnectOpts) (*r.Session, error) {
 		return nil, err
 	}
 
-	// if err := r.DBCreate("test").Exec(session); err != nil {
-	// 	return nil, err
-	// }
+	// Define the table name to delete
+	tableName1 := "query_information_bulk_transaction" // Replace with the name of the table you want to delete
+	tableName2 := "send_information_bulk_transaction"
+	tableName3 := "retrieve_transactions"
 
-	// if err := r.DB("ci-connector-transaction").TableCreate("transactions").Exec(session); err != nil {
-	// 	return nil, err
-	// }
+	// Delete the table
+	// Check if the table exists
+	tableExists, err := r.DB("ci-connector-transaction").TableList().Contains(tableName1).Run(session)
 
-	// if err := r.DB("ci-connector-transaction").Table("transactions").IndexCreate("sender_account_number").Exec(session); err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		fmt.Println("Failed to check if table exists:", err)
+		return nil, err
+	}
+
+	var exists bool
+	err = tableExists.One(&exists)
+
+	if err != nil {
+		fmt.Println("Failed to get table existence:", err)
+		return nil, err
+	}
+
+	// Delete the table if it exists
+	if exists {
+		_, err = r.DB("ci-connector-transaction").TableDrop(tableName1).RunWrite(session)
+
+		if err != nil {
+			fmt.Println("Failed to delete table:", err)
+			return nil, err
+		}
+
+		fmt.Println("Table deleted successfully!")
+	} else {
+		fmt.Println("Table does not exist.")
+	}
+
+	// Delete the table
+	// Check if the table exists
+	tableExists, err = r.DB("ci-connector-transaction").TableList().Contains(tableName2).Run(session)
+
+	if err != nil {
+		fmt.Println("Failed to check if table exists:", err)
+		return nil, err
+	}
+
+	err = tableExists.One(&exists)
+
+	if err != nil {
+		fmt.Println("Failed to get table existence:", err)
+		return nil, err
+	}
+
+	// Delete the table if it exists
+	if exists {
+		_, err = r.DB("ci-connector-transaction").TableDrop(tableName2).RunWrite(session)
+
+		if err != nil {
+			fmt.Println("Failed to delete table:", err)
+			return nil, err
+		}
+
+		fmt.Println("Table deleted successfully!")
+	} else {
+		fmt.Println("Table does not exist.")
+	}
+
+	// Delete the table
+	// Check if the table exists
+	tableExists, err = r.DB("ci-connector-transaction").TableList().Contains(tableName3).Run(session)
+
+	if err != nil {
+		fmt.Println("Failed to check if table exists:", err)
+		return nil, err
+	}
+
+	err = tableExists.One(&exists)
+
+	if err != nil {
+		fmt.Println("Failed to get table existence:", err)
+		return nil, err
+	}
+
+	// Delete the table if it exists
+	if exists {
+		_, err = r.DB("ci-connector-transaction").TableDrop(tableName3).RunWrite(session)
+
+		if err != nil {
+			fmt.Println("Failed to delete table:", err)
+			return nil, err
+		}
+
+		fmt.Println("Table deleted successfully!")
+	} else {
+		fmt.Println("Table does not exist.")
+	}
+
+	// Create the table
+	_, err = r.DB("ci-connector-transaction").TableCreate(tableName1).RunWrite(session)
+
+	if err != nil {
+		fmt.Println("Failed to create table:", err)
+		return nil, err
+	}
+
+	_, err = r.DB("ci-connector-transaction").TableCreate(tableName2).RunWrite(session)
+
+	if err != nil {
+		fmt.Println("Failed to create table:", err)
+		return nil, err
+	}
+
+	_, err = r.DB("ci-connector-transaction").TableCreate(tableName3).RunWrite(session)
+
+	if err != nil {
+		fmt.Println("Failed to create table:", err)
+		return nil, err
+	}
+
+	fmt.Println("Table created successfully!")
 
 	return session, nil
 }

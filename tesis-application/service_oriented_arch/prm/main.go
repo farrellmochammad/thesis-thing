@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"prm/controllers"
 	"prm/logger"
@@ -12,6 +13,9 @@ import (
 func main() {
 	r := gin.Default()
 
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
+	flag.Parse()
+
 	db, err := models.SetupModels()
 	if err != nil {
 		panic("Failed to connect to database!")
@@ -20,7 +24,7 @@ func main() {
 
 	logger := logger.MyLogger{}
 
-	err = logger.Init("prm.log")
+	err = logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}

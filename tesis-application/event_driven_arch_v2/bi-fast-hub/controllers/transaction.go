@@ -112,29 +112,30 @@ func BiHubUpdateBulkTransaction(mqtt_client MQTT.Client, db *gorm.DB, payload st
 	}
 
 	logger.Log("topic/bi-fast-hub-execute-transaction start" + input.BulkTransactionId)
-
 	bankCode := "0"
-
 	for _, t := range input.Transactions {
 		isSucess := logic.UpdateBalance(db, t)
 		bankReceiver, _, _ := logic.ValidateBankReceiver(db, t)
 		bankSender, _, _ := logic.ValidateBankSender(db, t)
 
-		sentTransaction := models.SentTransaction{
-			Transaction:  t,
-			BankSender:   bankSender.BankURL,
-			BankReceiver: bankReceiver.BankURL,
-		}
+		t.TransactionHash = input.BulkTransactionId
+
+		bankCode = bankSender.BankCode
+
+		// sentTransaction := models.SentTransaction{
+		// 	Transaction:  t,
+		// 	BankSender:   bankSender.BankURL,
+		// 	BankReceiver: bankReceiver.BankURL,
+		// }
 
 		if isSucess {
 
-			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-success", sentTransaction)
+			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-success"+bankSender.BankCode, t)
+			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-success"+bankReceiver.BankCode, t)
 		} else {
-
-			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-failed", sentTransaction)
+			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-failed"+bankSender.BankCode, t)
+			middleware.PublishMessage(mqtt_client, "topic/bi-fast-hub-execute-transaction-finish-failed"+bankSender.BankCode, t)
 		}
-
-		bankCode = bankSender.BankCode
 
 	}
 

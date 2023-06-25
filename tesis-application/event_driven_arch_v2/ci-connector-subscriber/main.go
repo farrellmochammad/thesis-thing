@@ -18,11 +18,12 @@ import (
 func main() {
 
 	bank_code := flag.String("bank_code", "1", "the port to listen on")
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
 	flag.Parse()
 
 	logger := logger.MyLogger{}
 
-	err := logger.Init("ci-connector-subsriber.log")
+	err := logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}
@@ -65,6 +66,16 @@ func main() {
 			controllers.BulkTransactionFinished(mqttClientAnalytic, string(msg.Payload()), logger)
 		}
 
+		if msg.Topic() == "topic/bi-fast-hub-execute-transaction-finish-success"+*bank_code {
+			fmt.Println("Message incoming ", msg.Topic())
+			controllers.BulkTransactionFinishedSuccess(mqttClientAnalytic, string(msg.Payload()), logger)
+		}
+
+		if msg.Topic() == "topic/bi-fast-hub-execute-transaction-finish-failed"+*bank_code {
+			fmt.Println("Message incoming ", msg.Topic())
+			controllers.BulkTransactionFinishedFail(mqttClientAnalytic, string(msg.Payload()), logger)
+		}
+
 	})
 
 	// create a new MQTT client
@@ -105,6 +116,8 @@ func main() {
 		"topic/bi-fast-hub-execute-bulk-transaction-finish" + *bank_code,
 		"topic/query-information-bulk-transaction-confirmation" + *bank_code,
 		"topic/query-information-bulk-transaction-receiver" + *bank_code,
+		"topic/bi-fast-hub-execute-transaction-finish-success" + *bank_code,
+		"topic/bi-fast-hub-execute-transaction-finish-failed" + *bank_code,
 	}
 
 	for _, topic := range topics {

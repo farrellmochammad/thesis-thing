@@ -95,7 +95,8 @@ type SendInformationBulkTransaction struct {
 }
 
 type RetrieveTransaction struct {
-	ID          string      `gorethink:"id,omitempty"`
+	RetrieveID  string      `gorethink:"id,omitempty"`
+	ID          string      `json:"transaction_hash"`
 	Transaction Transaction `json:"transaction"`
 	Status      string      `json:"status"`
 	CreatedAt   string      `json:"created_at"`

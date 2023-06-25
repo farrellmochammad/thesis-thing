@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -150,6 +149,7 @@ func InputBulkTransactionIncomingAnalytic(c *gin.Context) {
 
 func InputTransactionIncomingAnalytic(c *gin.Context) {
 	session := c.MustGet("rdb").(*r.Session)
+	logger := c.MustGet("logger").(logger.MyLogger)
 
 	var input models.ProcessTransaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -157,13 +157,15 @@ func InputTransactionIncomingAnalytic(c *gin.Context) {
 		return
 	}
 
+	logger.Log("/success-bulk-transaction-analytic start" + input.Transaction.TransactionHash)
+
 	send_information_transaction := models.SendInformationTransaction{
 		ID:          input.Transaction.TransactionHash,
 		Transaction: input.Transaction,
 		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
 	}
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Insert(send_information_transaction).RunWrite(session)
+	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction").Insert(send_information_transaction).RunWrite(session)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -172,7 +174,7 @@ func InputTransactionIncomingAnalytic(c *gin.Context) {
 }
 
 func SuccessTransactionAnalytic(c *gin.Context) {
-	// session := c.MustGet("rdb").(*r.Session)
+	session := c.MustGet("rdb").(*r.Session)
 
 	var input models.Transaction
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -180,15 +182,17 @@ func SuccessTransactionAnalytic(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(input)
+	retrieve_transaction := models.RetrieveTransaction{
+		ID:          input.TransactionHash,
+		Transaction: input,
+		Status:      "Success",
+		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
+	}
 
-	// _, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
-	// 	"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
-	// 	"Status":    "Success",
-	// }).RunWrite(session)
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	_, err := r.DB("ci-connector-transaction").Table("retrieve_transactions").Insert(retrieve_transaction).RunWrite(session)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": input})
 }
@@ -225,7 +229,7 @@ func FailedTransactionAnalytic(c *gin.Context) {
 		return
 	}
 
-	_, err := r.DB("ci-connector-transaction").Table("send_information_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
+	_, err := r.DB("ci-connector-transaction").Table("send_information_bulk_transaction").Get(input.TransactionHash).Update(map[string]interface{}{
 		"UpdatedAt": time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
 		"Status":    "Failed",
 	}).RunWrite(session)
@@ -248,6 +252,7 @@ func RetrieveTransactionAnalytic(c *gin.Context) {
 	retrieve_transaction := models.RetrieveTransaction{
 		ID:          input.TransactionHash,
 		Transaction: input,
+		Status:      "Success",
 		CreatedAt:   time.Now().UTC().Format("2006-01-02T15:04:05.999999Z07:00"),
 	}
 

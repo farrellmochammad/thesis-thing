@@ -56,7 +56,8 @@ type QueryInformationBulkTransactionWithDuration struct {
 func main() {
 	QueryInformationTesting("query_information_75_tps_100_soa", "query_information_bulk_transaction")
 	QueryTransactionTesting("query_transaction_75_tps_100_soa", "send_information_bulk_transaction")
-
+	QueryInformationTesting("query_information_75_tps_100_eda", "query_information_bulk_transaction_eda")
+	QueryTransactionTesting("query_transaction_75_tps_100_eda", "send_information_bulk_transaction_eda")
 }
 
 func QueryInformationTesting(filename string, table string) {
@@ -212,7 +213,6 @@ func QueryTransactionTesting(filename string, table string) {
 		// Calculate time difference between CreatedAt and UpdatedAt
 		layout := "2006-01-02T15:04:05.999999Z07:00"
 
-		fmt.Println("ID : ", q.ID)
 		createdTime, err := time.Parse(layout, q.CreatedAt)
 		if err != nil {
 			panic(err)

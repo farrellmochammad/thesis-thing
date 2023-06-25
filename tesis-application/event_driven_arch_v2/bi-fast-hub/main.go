@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -16,6 +17,9 @@ import (
 
 func main() {
 
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
+	flag.Parse()
+
 	db, err := models.SetupModels()
 	if err != nil {
 		panic("Failed to connect to database!")
@@ -24,7 +28,7 @@ func main() {
 
 	logger := logger.MyLogger{}
 
-	err = logger.Init("bi-fast-hub.log")
+	err = logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}

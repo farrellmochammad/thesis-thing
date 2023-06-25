@@ -4,6 +4,7 @@ import (
 	"bi-fast-esb/controllers"
 	"bi-fast-esb/logger"
 	"bi-fast-esb/models"
+	"flag"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,8 @@ import (
 
 func main() {
 	r := gin.Default()
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
+	flag.Parse()
 
 	db, err := models.SetupModels()
 	if err != nil {
@@ -20,7 +23,7 @@ func main() {
 
 	logger := logger.MyLogger{}
 
-	err = logger.Init("bi-fast-esb.log")
+	err = logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}

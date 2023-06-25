@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -15,6 +16,8 @@ import (
 )
 
 func main() {
+	logfile := flag.String("logfile", "analytic", "the port to listen on")
+	flag.Parse()
 
 	db, err := models.SetupModels()
 	if err != nil {
@@ -24,7 +27,7 @@ func main() {
 
 	logger := logger.MyLogger{}
 
-	err = logger.Init("prm.log")
+	err = logger.Init(*logfile + ".log")
 	if err != nil {
 		log.Fatal("Failed to initialize logger:", err)
 	}
